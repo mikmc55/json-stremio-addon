@@ -1,0 +1,10 @@
+
+services:
+  stremio-addon:
+    build: .
+    ports:
+      - "7010:7010"
+    environment:
+      - CONFIG_PATH=/config
+    volumes:
+      - ./config:/config

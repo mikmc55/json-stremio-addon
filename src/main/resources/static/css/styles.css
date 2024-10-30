@@ -1,0 +1,69 @@
+/* styles.css */
+:root {
+    --primary-color: #3b82f6;
+    --primary-dark-color: #1e40af; /* Nuevo color para cabecera más oscuro */
+    --secondary-color: #ecf3fc;
+    --font-family: 'Roboto', sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: #f8fafc;
+    color: #333;
+}
+
+h1 {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* Tabla */
+.table {
+    background-color: var(--secondary-color);
+}
+
+/* Cabecera más oscura */
+.table-primary {
+    background-color: var(--primary-dark-color);
+    color: #fff;
+    --cui-table-bg: var(--primary-dark-color);
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f0f8ff;
+}
+
+/* Estilos de modal */
+.modal-content {
+    border-radius: 10px;
+}
+
+/* Botones */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-outline-danger {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.btn-outline-danger:hover {
+    background-color: #ef4444;
+    color: #fff;
+}
+
+.btn-outline-warning {
+    border-color: #fbbf24;
+    color: #f59e0b;
+}
+
+.btn-outline-warning:hover {
+    background-color: #fbbf24;
+    color: #fff;
+}
