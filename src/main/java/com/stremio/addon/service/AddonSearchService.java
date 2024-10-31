@@ -4,7 +4,6 @@ import com.stremio.addon.controller.dto.Catalog;
 import com.stremio.addon.controller.dto.CatalogContainer;
 import com.stremio.addon.controller.dto.Manifest;
 import com.stremio.addon.controller.dto.Stream;
-import com.stremio.addon.model.TorrentSearcher;
 import com.stremio.addon.repository.TorrentSearcherRepository;
 import com.stremio.addon.service.searcher.TorrentSearcherFactory;
 import com.stremio.addon.service.searcher.TorrentSearcherStrategy;
