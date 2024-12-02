@@ -1,4 +1,4 @@
-package com.stremio.addon.service.searcher;
+package com.stremio.addon.service.searcher.torrent;
 
 import java.util.List;
 

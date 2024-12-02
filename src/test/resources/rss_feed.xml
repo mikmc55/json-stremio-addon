@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:torznab="http://torznab.com/schemas/2015/feed">
+    <channel>
+        <atom:link href="http://192.168.1.148:9117/" rel="self" type="application/rss+xml" />
+        <title>MejorTorrent</title>
+        <description>MejorTorrent - Hay veces que un torrent viene mejor! :)</description>
+        <link>https://www24.mejortorrent.zip/</link>
+        <language>en-US</language>
+        <category>search</category>
+        <item>
+            <title>Line Of Duty S05E01 SPANISH HDTV 720p</title>
+            <guid>https://www24.mejortorrent.zip/torrents/series/123996_-1561103550-Line-Of-Duty---Temporada-5--cap1.torrent</guid>
+            <jackettindexer id="mejortorrent">MejorTorrent</jackettindexer>
+            <type>public</type>
+            <comments>https://www24.mejortorrent.zip/serie/73535/73535/line-of-duty-5a-temporada-720p</comments>
+            <pubDate>Thu, 07 Nov 2024 06:22:36 +0000</pubDate>
+            <size>1073741824</size>
+            <files>1</files>
+            <description />
+            <link>http://192.168.1.148:9117/dl/mejortorrent/?jackett_apikey=cdbz8t1yuz5oz5fsr9z74kj4gay86b2r&amp;path=Q2ZESjhKOHpwbkt6NkVCRWdTZFJJNERpNzQxR0NReE9zb19pamEzSjNhUWd4bzg0RDFoZXpNM1J0MjFNNjZjOXVsRW1vR2RxcDB0THhFU19NQ0F3aGJCVjkyVmFpZmlCSEI0dzRVclhmbnU5SHZhU1gxaFg1U0JlVGdZNnRwNTBkN2xWaXJjRDd3cXRUclRLS1lOZ0phQzVHLXFzcVJaem93Tnd2MXpsd0g2ODFya3JGblNWYURfWVVBNEd6QjdHbkdYanZQN0JuTkZJTkV0akliMVpaaWpseEdOYU1QSERNOE84X2VITHRHNmI2bTlpUGpyZUJva2tFUE54cFN5TEJJcmw5UQ&amp;file=Line+Of+Duty+S05E01+SPANISH+HDTV+720p</link>
+            <category>5040</category>
+            <category>114804</category>
+            <enclosure url="http://192.168.1.148:9117/dl/mejortorrent/?jackett_apikey=cdbz8t1yuz5oz5fsr9z74kj4gay86b2r&amp;path=Q2ZESjhKOHpwbkt6NkVCRWdTZFJJNERpNzQxR0NReE9zb19pamEzSjNhUWd4bzg0RDFoZXpNM1J0MjFNNjZjOXVsRW1vR2RxcDB0THhFU19NQ0F3aGJCVjkyVmFpZmlCSEI0dzRVclhmbnU5SHZhU1gxaFg1U0JlVGdZNnRwNTBkN2xWaXJjRDd3cXRUclRLS1lOZ0phQzVHLXFzcVJaem93Tnd2MXpsd0g2ODFya3JGblNWYURfWVVBNEd6QjdHbkdYanZQN0JuTkZJTkV0akliMVpaaWpseEdOYU1QSERNOE84X2VITHRHNmI2bTlpUGpyZUJva2tFUE54cFN5TEJJcmw5UQ&amp;file=Line+Of+Duty+S05E01+SPANISH+HDTV+720p" length="1073741824" type="application/x-bittorrent" />
+            <torznab:attr name="category" value="5040" />
+            <torznab:attr name="category" value="114804" />
+            <torznab:attr name="seeders" value="1" />
+            <torznab:attr name="peers" value="2" />
+            <torznab:attr name="downloadvolumefactor" value="0" />
+            <torznab:attr name="uploadvolumefactor" value="1" />
+        </item>
+        <item>
+            <title>Line of Duty S05E01  SPANISH HDTV</title>
+            <guid>https://www24.mejortorrent.zip/torrents/series/Line-Of-Duty-5-1-HDTV.torrent</guid>
+            <jackettindexer id="mejortorrent">MejorTorrent</jackettindexer>
+            <type>public</type>
+            <comments>https://www24.mejortorrent.zip/serie/61849/61849/line-of-duty-5a-temporada</comments>
+            <pubDate>Thu, 07 Nov 2024 06:22:36 +0000</pubDate>
+            <size>536870912</size>
+            <files>1</files>
+            <description />
+            <link>http://192.168.1.148:9117/dl/mejortorrent/?jackett_apikey=cdbz8t1yuz5oz5fsr9z74kj4gay86b2r&amp;path=Q2ZESjhKOHpwbkt6NkVCRWdTZFJJNERpNzQyWkFGdlV2Vmx3TW1tX1hadFdLWm53Qk9LcWt2MC1DTG5FSDloNENDZEFSNGlIYmJPSW9vYk5pdTdTcFZYaUN3bTNvVHlFREp6cWVURS1uOUVPZ0VNa3dYNE1odk9Tek92Q1NDckRkSGNZdFRlNV9XbHBYY1o4bVcteVlPYkRCUHhZR0h4U1lCUkU5bXVoY2VuYXNRcmp2eFBxY3lKb3BIVTlkU3ByRnhlWEJkalRmX2psUzZaV1YwcnVfdENBZE5F&amp;file=Line+of+Duty+S05E01++SPANISH+HDTV</link>
+            <category>5030</category>
+            <category>126776</category>
+            <enclosure url="http://192.168.1.148:9117/dl/mejortorrent/?jackett_apikey=cdbz8t1yuz5oz5fsr9z74kj4gay86b2r&amp;path=Q2ZESjhKOHpwbkt6NkVCRWdTZFJJNERpNzQyWkFGdlV2Vmx3TW1tX1hadFdLWm53Qk9LcWt2MC1DTG5FSDloNENDZEFSNGlIYmJPSW9vYk5pdTdTcFZYaUN3bTNvVHlFREp6cWVURS1uOUVPZ0VNa3dYNE1odk9Tek92Q1NDckRkSGNZdFRlNV9XbHBYY1o4bVcteVlPYkRCUHhZR0h4U1lCUkU5bXVoY2VuYXNRcmp2eFBxY3lKb3BIVTlkU3ByRnhlWEJkalRmX2psUzZaV1YwcnVfdENBZE5F&amp;file=Line+of+Duty+S05E01++SPANISH+HDTV" length="536870912" type="application/x-bittorrent" />
+            <torznab:attr name="category" value="5030" />
+            <torznab:attr name="category" value="126776" />
+            <torznab:attr name="seeders" value="1" />
+            <torznab:attr name="peers" value="2" />
+            <torznab:attr name="downloadvolumefactor" value="0" />
+            <torznab:attr name="uploadvolumefactor" value="1" />
+        </item>
+    </channel>
+</rss>

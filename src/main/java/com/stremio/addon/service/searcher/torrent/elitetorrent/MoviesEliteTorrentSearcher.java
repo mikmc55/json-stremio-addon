@@ -1,7 +1,7 @@
-package com.stremio.addon.service.searcher.elitetorrent;
+package com.stremio.addon.service.searcher.torrent.elitetorrent;
 
 import com.stremio.addon.controller.dto.Stream;
-import com.stremio.addon.service.searcher.MoviesTorrentSearcher;
+import com.stremio.addon.service.searcher.torrent.MoviesTorrentSearcher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;

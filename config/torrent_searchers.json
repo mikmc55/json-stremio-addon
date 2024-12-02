@@ -7,10 +7,17 @@
     "description": "Rojo Torrent"
   },
   {
-    "id": 2,
-    "url": "https://www22.mejortorrent.zip",
-    "name": "MejorTorrent",
-    "type": "MejorTorrent",
-    "description": "Mejor Torrent"
+    "id": 4,
+    "url": "https://jackett.myaihomees//api/v2.0/indexers/dontorrent/results/torznab/api",
+    "name": "DonTorrentJackett",
+    "type": "Jackett",
+    "description": "Don Torrent by Jackett"
+  },
+  {
+    "id": 5,
+    "url": "https://jackett.myaihome.es/api/v2.0/indexers/wolfmax4k/results/torznab/api",
+    "name": "Wolfmax4kJackett",
+    "type": "Jackett",
+    "description": "Wolfmax4k by Jackett"
   }
 ]

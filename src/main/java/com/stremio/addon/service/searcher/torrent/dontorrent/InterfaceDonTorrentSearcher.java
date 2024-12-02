@@ -1,6 +1,6 @@
-package com.stremio.addon.service.searcher.dontorrent;
+package com.stremio.addon.service.searcher.torrent.dontorrent;
 
-import com.stremio.addon.service.searcher.InterfaceTorrentSearcher;
+import com.stremio.addon.service.searcher.torrent.InterfaceTorrentSearcher;
 
 
 public interface InterfaceDonTorrentSearcher extends InterfaceTorrentSearcher {

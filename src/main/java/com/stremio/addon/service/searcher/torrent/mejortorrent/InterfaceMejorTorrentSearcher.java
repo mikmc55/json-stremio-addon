@@ -1,6 +1,6 @@
-package com.stremio.addon.service.searcher.mejortorrent;
+package com.stremio.addon.service.searcher.torrent.mejortorrent;
 
-import com.stremio.addon.service.searcher.InterfaceTorrentSearcher;
+import com.stremio.addon.service.searcher.torrent.InterfaceTorrentSearcher;
 
 public interface InterfaceMejorTorrentSearcher extends InterfaceTorrentSearcher {
     default String getSearchPath() {

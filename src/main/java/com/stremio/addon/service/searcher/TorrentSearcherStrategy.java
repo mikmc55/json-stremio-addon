@@ -8,5 +8,4 @@ import java.util.List;
 public interface TorrentSearcherStrategy {
     void initialize(TorrentSearcher torrentSearcher);
     List<Stream> search(String title, String...args);
-    String getSearchUrl(String search);
 }

@@ -6,8 +6,12 @@ addon:
   searchers:
     file:
       path: ${CONFIG_PATH:/tmp}
-
+  jackett:
+    apiKey: "cdbz8t1yuz5oz5fsr9z74kj4gay86b2r"
   tmbd:
     apiUrl: "https://api.themoviedb.org/3"
     apiKey: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkMjIyMWRiODNjM2MxYWIxMTM4M2Y5MDY2MTkzODAwOSIsIm5iZiI6MTcyODg4Nzc3OC41NzYxNzYsInN1YiI6IjY2NzU0OWVjMWE3YzZiYjQ3NTE2ZmM3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fSJq0Dio4tLcL2lhe7XYBMoGNltnKp_K_to3buLzg7s"
 
+logging:
+  level:
+    root: INFO

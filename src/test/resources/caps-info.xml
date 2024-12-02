@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caps>
+    <server title="Jackett" />
+    <limits default="100" max="100" />
+    <searching>
+        <search available="yes" supportedParams="q" />
+        <tv-search available="yes" supportedParams="q,season,ep" />
+        <movie-search available="yes" supportedParams="q" />
+        <music-search available="yes" supportedParams="q" />
+        <audio-search available="yes" supportedParams="q" />
+        <book-search available="no" supportedParams="q" />
+    </searching>
+    <categories>
+        <category id="2000" name="Movies">
+            <subcat id="2045" name="Movies/UHD" />
+        </category>
+        <category id="3000" name="Audio" />
+        <category id="5000" name="TV">
+            <subcat id="5030" name="TV/SD" />
+            <subcat id="5040" name="TV/HD" />
+        </category>
+        <category id="117130" name="Música" />
+        <category id="119624" name="Pelicula" />
+        <category id="165051" name="Peliculas 4K" />
+        <category id="152610" name="Serie" />
+        <category id="123875" name="Serie HD" />
+    </categories>
+</caps>

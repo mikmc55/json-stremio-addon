@@ -1,7 +1,7 @@
-package com.stremio.addon.service.searcher.dontorrent;
+package com.stremio.addon.service.searcher.torrent.dontorrent;
 
 import com.stremio.addon.controller.dto.Stream;
-import com.stremio.addon.service.searcher.SeriesTorrentSearcher;
+import com.stremio.addon.service.searcher.torrent.SeriesTorrentSearcher;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

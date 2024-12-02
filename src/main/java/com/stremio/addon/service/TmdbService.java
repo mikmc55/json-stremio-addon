@@ -3,10 +3,13 @@ package com.stremio.addon.service;
 import com.stremio.addon.configuration.TmdbConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -19,8 +22,17 @@ public class TmdbService {
     private final TmdbConfiguration configuration;
     private final RestTemplate restTemplate;
 
+    private static final Map<String, String> CONTENT_TYPE_MAP = Map.of(
+            "movie", "movie_results",
+            "series", "tv_results"
+    );
+    private static final Map<String, String> TITLE_KEY_MAP = Map.of(
+            "movie", "title",
+            "series", "name"
+    );
+
     @Autowired
-    public TmdbService(TmdbConfiguration configuration, RestTemplate restTemplate) {
+    public TmdbService(TmdbConfiguration configuration, @Qualifier("restTemplateJson") RestTemplate restTemplate) {
         this.configuration = configuration;
         this.restTemplate = restTemplate;
     }
@@ -39,14 +51,21 @@ public class TmdbService {
         log.info("Starting search for {} with IMDb ID: {}. URL: {}", contentType, imdbId, tmdbUrl);
 
         try {
-            ResponseEntity<Map> response = restTemplate.exchange(tmdbUrl,
-                    org.springframework.http.HttpMethod.GET, entity, Map.class);
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    tmdbUrl,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
 
             return processResponse(response, contentType, imdbId);
 
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            log.error("HTTP error fetching title from TMDB for {} with IMDb ID {}: {}", contentType, imdbId, e.getMessage(), e);
+            throw new RuntimeException("HTTP error fetching title from TMDB for IMDb ID: " + imdbId, e);
         } catch (Exception e) {
-            log.error("Error fetching title from TMDB for {} with IMDb ID {}: {}", contentType, imdbId, e.getMessage(), e);
-            throw new RuntimeException("Error fetching title from TMDB for IMDb ID: " + imdbId, e);
+            log.error("Unexpected error fetching title from TMDB for {} with IMDb ID {}: {}", contentType, imdbId, e.getMessage(), e);
+            throw new RuntimeException("Unexpected error fetching title from TMDB for IMDb ID: " + imdbId, e);
         }
     }
 
@@ -71,7 +90,8 @@ public class TmdbService {
     private HttpEntity<String> createHttpEntity() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + configuration.getApiKey());
-        log.debug("Created HttpEntity with Authorization header");
+        headers.set("Accept", "application/json"); // Asegura que solo se acepte JSON como respuesta
+        log.debug("Created HttpEntity with Authorization and Accept headers");
         return new HttpEntity<>(headers);
     }
 
@@ -92,14 +112,15 @@ public class TmdbService {
             throw new RuntimeException("No response from TMDB for IMDb ID: " + imdbId);
         }
 
-        if (contentType.equals("movie")) {
-            return extractTitle(responseBody, "movie_results", "title", imdbId);
-        } else if (contentType.equals("series")) {
-            return extractTitle(responseBody, "tv_results", "name", imdbId);
+        String resultKey = CONTENT_TYPE_MAP.get(contentType);
+        String titleKey = TITLE_KEY_MAP.get(contentType);
+
+        if (resultKey == null || titleKey == null) {
+            log.warn("Invalid content type provided: {}", contentType);
+            throw new IllegalArgumentException("Invalid content type: " + contentType);
         }
 
-        log.warn("Invalid content type provided: {}", contentType);
-        throw new RuntimeException("Invalid content type: " + contentType);
+        return extractTitle(responseBody, resultKey, titleKey, imdbId);
     }
 
     /**

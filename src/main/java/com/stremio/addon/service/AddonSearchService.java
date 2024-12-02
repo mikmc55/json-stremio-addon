@@ -29,7 +29,8 @@ public class AddonSearchService {
 
     public List<Stream> searchTorrent(String type, String id, String... args) {
         String title = tmdbService.getTitle(id, type);
-        return searcherRepository.findAll().stream()
+        return searcherRepository.findAll()
+                .parallelStream()
                 .peek(provider -> log.info("Searching in provider: {}", provider.getName()))
                 .flatMap(provider -> {
                     try {
