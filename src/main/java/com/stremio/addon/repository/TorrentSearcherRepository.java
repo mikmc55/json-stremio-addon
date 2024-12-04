@@ -1,6 +1,6 @@
 package com.stremio.addon.repository;
 
-import com.stremio.addon.model.TorrentSearcher;
+import com.stremio.addon.controller.dto.TorrentSearcher;
 
 import java.util.List;
 import java.util.Optional;

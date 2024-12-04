@@ -1,6 +1,6 @@
 package com.stremio.addon.service.searcher;
 
-import com.stremio.addon.model.TorrentSearcher;
+import com.stremio.addon.controller.dto.TorrentSearcher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;

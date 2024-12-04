@@ -1,7 +1,7 @@
 package com.stremio.addon.service.searcher;
 
 import com.stremio.addon.controller.dto.Stream;
-import com.stremio.addon.model.TorrentSearcher;
+import com.stremio.addon.controller.dto.TorrentSearcher;
 
 import java.util.List;
 

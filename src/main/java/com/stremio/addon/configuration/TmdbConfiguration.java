@@ -10,4 +10,5 @@ import org.springframework.context.annotation.Configuration;
 public class TmdbConfiguration {
     private String apiKey;
     private String apiUrl;
+    private String accountId;
 }

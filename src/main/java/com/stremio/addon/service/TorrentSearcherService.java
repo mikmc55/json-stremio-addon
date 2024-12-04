@@ -1,6 +1,6 @@
 package com.stremio.addon.service;
 
-import com.stremio.addon.model.TorrentSearcher;
+import com.stremio.addon.controller.dto.TorrentSearcher;
 import com.stremio.addon.repository.TorrentSearcherRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

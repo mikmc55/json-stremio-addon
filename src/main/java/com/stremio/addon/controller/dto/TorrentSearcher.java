@@ -1,4 +1,4 @@
-package com.stremio.addon.model;
+package com.stremio.addon.controller.dto;
 
 import lombok.Getter;
 import lombok.Setter;

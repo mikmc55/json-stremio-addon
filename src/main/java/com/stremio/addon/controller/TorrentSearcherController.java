@@ -1,6 +1,6 @@
 package com.stremio.addon.controller;
 
-import com.stremio.addon.model.TorrentSearcher;
+import com.stremio.addon.controller.dto.TorrentSearcher;
 import com.stremio.addon.service.TorrentSearcherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/searchers")
+@RequestMapping(value = "/searchers", produces = "application/json")
 public class TorrentSearcherController {
 
     private final TorrentSearcherService searcherService;

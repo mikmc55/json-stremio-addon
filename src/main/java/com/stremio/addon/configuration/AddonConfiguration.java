@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 
 @Configuration
+@EnableJdbcRepositories(basePackages = "com.stremio.addon")
 @Data
 public class AddonConfiguration {
     private String name;

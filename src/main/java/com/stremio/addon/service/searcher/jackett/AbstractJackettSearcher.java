@@ -2,7 +2,7 @@ package com.stremio.addon.service.searcher.jackett;
 
 import com.stremio.addon.configuration.AddonConfiguration;
 import com.stremio.addon.controller.dto.Stream;
-import com.stremio.addon.model.TorrentSearcher;
+import com.stremio.addon.controller.dto.TorrentSearcher;
 import com.stremio.addon.service.searcher.AbstractStreamProcessor;
 import com.stremio.addon.service.searcher.TorrentSearcherStrategy;
 import com.stremio.addon.service.searcher.jackett.dto.CapsInfo;
@@ -101,6 +101,10 @@ public abstract class AbstractJackettSearcher extends AbstractStreamProcessor im
     }
 
     private List<Stream> generateStreams(List<TorrentRss.TorrentItem> torrentItems) {
+        if (torrentItems == null || torrentItems.isEmpty()) {
+            log.info("No torrents found for the given criteria.");
+            return List.of();
+        }
         return torrentItems.stream().map(torrentItem -> {
             log.info("Torrent link found for movie: {}", torrentItem.getTitle());
             log.info("[{}]", torrentItem.getLink());

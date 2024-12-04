@@ -1,6 +1,6 @@
 package com.stremio.addon.service.searcher;
 
-import com.stremio.addon.model.TorrentSearcher;
+import com.stremio.addon.controller.dto.TorrentSearcher;
 
 public interface TorrentSearcherFactory {
 

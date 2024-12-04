@@ -1,7 +1,7 @@
 package com.stremio.addon.service.searcher.torrent;
 
 import com.stremio.addon.controller.dto.Stream;
-import com.stremio.addon.model.TorrentSearcher;
+import com.stremio.addon.controller.dto.TorrentSearcher;
 import com.stremio.addon.service.searcher.AbstractStreamProcessor;
 import com.stremio.addon.service.searcher.TorrentSearcherStrategy;
 import lombok.extern.slf4j.Slf4j;

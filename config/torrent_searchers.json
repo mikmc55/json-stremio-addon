@@ -8,7 +8,7 @@
   },
   {
     "id": 4,
-    "url": "https://jackett.myaihomees//api/v2.0/indexers/dontorrent/results/torznab/api",
+    "url": "https://jackett.myaihome.es//api/v2.0/indexers/dontorrent/results/torznab/api",
     "name": "DonTorrentJackett",
     "type": "Jackett",
     "description": "Don Torrent by Jackett"

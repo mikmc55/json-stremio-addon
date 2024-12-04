@@ -22,7 +22,7 @@ public class AddonController {
     public AddonSearchResult seriesStreamHandler(@PathVariable String id,
                                                  @PathVariable(required = false) String season,
                                                  @PathVariable(required = false) String episode) {
-        var streams = addonSearchService.searchTorrent("series", id, season, episode);
+        var streams = addonSearchService.searchSeriesTorrent(id, season, episode);
         return AddonSearchResult.builder()
                 .streams(streams)
                 .build();
@@ -31,7 +31,7 @@ public class AddonController {
     @GetMapping(value = "/stream/movie/{id}.json", produces = "application/json")
     @CrossOrigin
     public AddonSearchResult movieStreamHandler(@PathVariable String id) {
-        var streams = addonSearchService.searchTorrent("movie", id);
+        var streams = addonSearchService.searchMoviesTorrent(id);
         return AddonSearchResult.builder()
                 .streams(streams)
                 .build();
@@ -45,7 +45,7 @@ public class AddonController {
 
     @RequestMapping(value = {"/catalog/{type}/{id}.json", "/catalog/{type}/{id}/{extra}.json"}, produces = "application/json")
     @CrossOrigin
-    public CatalogContainer getCatalog(@PathVariable("type") String type, @PathVariable("id") String id, @PathVariable("extra") Optional<String> extra) {
+    public CatalogContainer getCatalog(@PathVariable("type") String type, @PathVariable("id") String id, @PathVariable("extra") String extra) {
         return addonSearchService.getCatalog(type, id, extra);
     }
 }
