@@ -1,14 +1,15 @@
 package com.stremio.addon.controller;
 
+import com.stremio.addon.controller.dto.ProviderDto;
 import com.stremio.addon.service.FavoritesService;
 import com.stremio.addon.service.tmdb.TmdbService;
-import com.stremio.addon.service.tmdb.dto.MovieDetail;
-import com.stremio.addon.service.tmdb.dto.PaginatedMovies;
-import com.stremio.addon.service.tmdb.dto.PaginatedTvShows;
-import com.stremio.addon.service.tmdb.dto.TvShowDetail;
+import com.stremio.addon.service.tmdb.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/tmdb", produces = "application/json")
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class TmdbController {
 
     private final TmdbService tmdbService;
-    private final FavoritesService  favoritesService;
+    private final FavoritesService favoritesService;
 
     /**
      * Get the title of a movie or TV show by IMDb ID.
@@ -71,7 +72,7 @@ public class TmdbController {
     @GetMapping("/favorites/movies")
     public ResponseEntity<PaginatedMovies> getFavoriteMovies(
             @RequestParam int page,
-            @RequestParam(defaultValue = "created_at.asc") String sortBy) {
+            @RequestParam(defaultValue = "popularity.desc") String sortBy) {
         PaginatedMovies favoriteMovies = tmdbService.getFavoriteMovies(page, sortBy);
         return ResponseEntity.ok(favoriteMovies);
     }
@@ -97,5 +98,75 @@ public class TmdbController {
             @RequestParam boolean favorite) {
         favoritesService.manageFavorite(mediaId, mediaType, favorite);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Endpoint para buscar películas con filtros avanzados.
+     *
+     * @param filters Filtros personalizados de búsqueda (opcional).
+     * @return Lista paginada de películas que coinciden con los filtros.
+     */
+    @GetMapping("/discover/movies")
+    public ResponseEntity<PaginatedMovies> discoverMovies(
+            @RequestParam Map<String, String> filters) {
+        PaginatedMovies movies = tmdbService.discoverMovies(filters);
+        return ResponseEntity.ok(movies);
+    }
+
+    /**
+     * Endpoint para buscar series con filtros avanzados.
+     *
+     * @param filters Filtros personalizados de búsqueda (opcional).
+     * @return Lista paginada de series que coinciden con los filtros.
+     */
+    @GetMapping("/discover/tv")
+    public ResponseEntity<PaginatedTvShows> discoverTvShows(
+            @RequestParam Map<String, String> filters) {
+        PaginatedTvShows tvShows = tmdbService.discoverTvShows(filters);
+        return ResponseEntity.ok(tvShows);
+    }
+
+    @GetMapping("/watch/providers/tv")
+    public ResponseEntity<?> getTvWatchProviders() {
+        ProvidersResponse response = tmdbService.getTvWatchProviders();
+        return ResponseEntity.ok(response.getResults());
+    }
+
+    @GetMapping("/watch/providers/movies")
+    public ResponseEntity<?> getMovieProviders() {
+        ProvidersResponse response = tmdbService.getMovieProviders();
+        return ResponseEntity.ok(response.getResults());
+    }
+
+    @GetMapping("{tv}/watch/providers/tv")
+    public ResponseEntity<?> getTvWatchProviders(@PathVariable("tv") Integer id) {
+        return ResponseEntity.ok(tmdbService.getTvWatchProviders(id));
+    }
+
+    @GetMapping("{movie}/watch/providers/movie")
+    public ResponseEntity<?> getMovieProviders(@PathVariable("movie") Integer movieId) {
+        return ResponseEntity.ok(tmdbService.getMovieWatchProviders(movieId));
+    }
+
+    @GetMapping("/providers/subscribe")
+    public ResponseEntity<List<ProviderDto>> getProviders() {
+        return ResponseEntity.ok(tmdbService.getUserProviders());
+    }
+
+    @PostMapping("/providers/subscribe")
+    public ResponseEntity<String> saveUserProviders(@RequestBody List<ProviderDto> request) {
+        tmdbService.saveUserProviders(request);
+        return ResponseEntity.ok("Proveedores guardados exitosamente");
+    }
+
+    /**
+     * Buscar películas o series por título.
+     */
+    @GetMapping("/search")
+    public ResponseEntity<PaginatedSearchResults> searchMoviesOrSeries(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "1") int page) {
+        PaginatedSearchResults searchResults = tmdbService.search(query, page);
+        return ResponseEntity.ok(searchResults);
     }
 }

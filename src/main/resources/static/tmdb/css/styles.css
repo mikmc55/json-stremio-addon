@@ -1,0 +1,433 @@
+/* -------------------------------------------------------------------
+   BASE
+------------------------------------------------------------------- */
+body {
+    font-family: Arial, sans-serif;
+}
+
+:root {
+    --maxPrimaryPageWidth: 1200px; /* El ancho máximo de la página */
+    --discoverColumnPadding: 0px; /* Espaciado entre columnas */
+    --numberOfDiscoverColumns: 5; /* Número de columnas */
+}
+
+/* -------------------------------------------------------------------
+   NAVBAR Y MENÚS DESPLEGABLES
+------------------------------------------------------------------- */
+.navbar-brand {
+    font-weight: bold;
+}
+
+.nav-item.dropdown:hover > .dropdown-menu {
+    display: block;
+    margin-top: 0; /* Alinea perfectamente el submenú */
+}
+
+.dropdown-menu {
+    display: none; /* Oculta por defecto */
+    position: absolute; 
+    top: 100%; 
+    left: 0;
+    z-index: 1000;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+}
+
+.dropdown-item {
+    transition: color 0.3s, background-color 0.3s;
+}
+
+.dropdown-item:hover {
+    color: #000000; 
+    background-color: #C1C1C1; 
+    text-decoration: none; 
+}
+
+.dropdown-item i {
+    margin-right: 10px; 
+}
+
+/* -------------------------------------------------------------------
+   CARDS DE CONTENIDO (PELÍCULAS / SERIES)
+------------------------------------------------------------------- */
+.card {
+    margin-bottom: 15px;
+}
+
+.card-img-top {
+    height: auto !important;
+    object-fit: contain !important; 
+    border-radius: 5px; 
+}
+
+/* Card personalizada */
+.card.custom-card {
+    position: relative;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-card img {
+    width: 100% !important; 
+    height: 100% !important; 
+    object-fit: cover !important; 
+}
+
+.card.custom-card > .content {
+    width: 100% !important;
+    padding: 10px 10px 22px !important;
+    position: relative !important;
+    white-space: normal !important;
+    display: flex !important;
+    align-content: flex-start !important;
+    flex-wrap: wrap !important;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card.custom-card > .content > h5 {
+    font-size: 14px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #333;
+    line-height: 2;
+    font-weight: bold;
+    text-align: left; 
+    white-space: nowrap; 
+    /*overflow: hidden; 
+    text-overflow: ellipsis; */
+}
+
+.card.custom-card > .content > p {
+    font-size: 14px !important;
+    margin: 0 !important;
+    padding: 5px 0 0 !important;
+    color: #666;
+    text-align: left; 
+}
+
+.card.custom-card {
+    transition: transform 0.3s ease; /* Ajusta la duración y la función de easing a tu gusto */
+}
+
+.card.custom-card:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+/* Ícono de favorito */
+.favorite-icon {
+    z-index: 10;
+}
+
+.favorite-icon button {
+    border: none;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* -------------------------------------------------------------------
+   FILTROS Y FORMULARIOS
+------------------------------------------------------------------- */
+.filters-column.filters-column {
+    max-width: 275px;
+}
+
+.filter-card {
+    height: auto;
+    background-color: #f2f2f2; /* Un gris claro más oscuro que el blanco */
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+.filter-title {
+    font-size: 1.2em;
+    color: #333; 
+    font-weight: bold;
+    margin: 0;
+}
+
+.filter-subtitle {
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* Ajuste de las opciones del filtro */
+.form-select {
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    height: auto;
+    width: 100%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-control {
+    font-size: 12px;    
+    max-width: 100%; 
+    box-sizing: border-box; 
+}
+
+.form-check-label {
+    color: #555; 
+    font-size: 13px;
+    margin-left: 5px;
+}
+
+.filter-menu {
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.filter-date {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-date label {
+    margin-bottom: 0.3rem;
+    font-weight: bold;
+}
+
+.filter-date input {
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+/* Acordeón de filtros (opcional) */
+.accordion-button {
+    font-size: 1rem;
+    color: #333;
+    background-color: #f8f9fa;
+    border: none;
+    box-shadow: none;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #0056b3;
+    background-color: #e7f1ff;
+}
+
+.accordion-body {
+    padding: 10px;
+}
+
+/* Estilos básicos del botón primario de bootstrap */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* -------------------------------------------------------------------
+   DISPOSICIÓN DEL GRID (PELÍCULAS / SERIES)
+------------------------------------------------------------------- */
+.row.g-3 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.col-md-2 {
+    flex: 0 0 calc(20% - 10px);
+    margin: 5px;
+    max-width: calc(20% - 10px);
+}
+
+.card.custom-card {
+    width: 100%;
+}
+
+/* -------------------------------------------------------------------
+   INDICADOR DE POPULARIDAD
+------------------------------------------------------------------- */
+.popularity-wrapper {
+    position: absolute;
+    bottom: 10px; 
+    right: 10px; 
+    width: 40px; 
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2; 
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.popularity-graph {
+    --size: 36px; 
+    --value: 0; 
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: conic-gradient(#007bff calc(var(--value) * 1%), #ddd 0);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.popularity-graph::before {
+    content: '';
+    position: absolute;
+    inset: 4px; 
+    background: #fff; 
+    border-radius: 50%;
+}
+
+.popularity-wrapper span {
+    position: absolute;
+    font-size: 12px; 
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    line-height: 1;
+}
+
+/* -------------------------------------------------------------------
+   PROVEEDORES
+------------------------------------------------------------------- */
+.provider-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+    padding: 0px;
+}
+
+.provider-card.selected {
+    border: 2px solid #0d6efd;
+    background-color: #e7f1ff;
+    transform: scale(1.05);
+    padding: 0px;
+}
+
+.provider-card:hover {
+    transform: scale(1.05); 
+}
+
+.provider-logo {
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: contain;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Lista de proveedores seleccionados */
+#providers-list .provider-item {
+    padding: 5px;
+    margin-bottom: 10px; /* Añade separación vertical entre ítems */
+    max-width: 180px; /* Ajusta el ancho máximo de cada ítem */
+    background-color: #f9f9f9; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    transition: transform 0.2s;
+}
+
+#providers-list .provider-item:hover {
+    transform: scale(1.05); 
+    cursor: pointer;
+}
+
+#providers-list .provider-item.selected {
+    border: 1px solid #0d6efd;
+    background-color: #e7f1ff;
+    transform: scale(0.95);
+}
+
+#providers-list .provider-logo {
+    max-width: 60px; 
+}
+
+#providers-list .provider-name {
+    font-size: 12px;
+    color: #333;
+}
+
+/* -------------------------------------------------------------------
+   BOTONES PERSONALIZADOS (APLICAR, ELIMINAR, SELECCIONAR)
+------------------------------------------------------------------- */
+.custom-btn {
+    height: 36px;
+    width: 120px;
+    font-size: 14px;
+    padding: 0;
+    line-height: 36px;
+    text-align: center;
+    display: inline-block;
+    transition: all 0.3s ease-in-out; 
+    cursor: pointer; 
+}
+
+.custom-btn.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
+.custom-btn.btn-primary:hover {
+    background-color: #0056b3; 
+    border-color: #004085;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
+.custom-btn.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+}
+
+.custom-btn.btn-danger:hover {
+    background-color: #a71d2a; 
+    border-color: #7a1420;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
+/* Botón Seleccionar (para abrir modal de proveedores) */
+button[data-bs-target="#providersModal"] {
+    height: 36px;
+    font-size: 14px;
+    padding: 0;
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+button[data-bs-target="#providersModal"]:hover {
+    background-color: #0056b3; 
+    border-color: #004085;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
+.search-result-image {
+    max-width: 150px;
+    height: auto;
+}

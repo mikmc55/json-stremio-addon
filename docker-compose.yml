@@ -1,10 +1,33 @@
 
 services:
-  stremio-addon:
-    build: .
+  stremio-mysql:
+    image: mysql:8.0
+    container_name: stremio_mysql
     ports:
-      - "7010:7010"
+      - "3307:3306"
     environment:
-      - CONFIG_PATH=/config
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-stremio_db}
+      MYSQL_USER: ${MYSQL_USER:-stremio_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-stremio_password}
     volumes:
-      - ./config:/config
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - stremio_network
+
+  stremio-addon:
+    image: rpendolero/stremio-addon:0.0.2
+    container_name: stremio_addon
+    depends_on:
+      - stremio-mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://stremio-mysql:3306/${MYSQL_DATABASE:-stremio_db}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-stremio_user}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-stremio_password}
+    ports:
+      - "8080:8080"
+    networks:
+      - stremio_network
+
+networks:
+  stremio_network:

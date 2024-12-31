@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consola</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- CSS Personalizado -->
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">Console</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTMDB"
+                aria-controls="navbarTMDB" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarTMDB">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <!-- Películas -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="moviesDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-fw fa-film"></i> Películas
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="moviesDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="contentService.loadContent('popular', 'movies')">Popular</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                    onclick="contentService.loadContent('trending', 'movies')">Tendencias</a></li>
+                            <li><a class="dropdown-item" href="#"
+                                    onclick="contentService.loadContent('favorites', 'movies')">Favoritas</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Series -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="seriesDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-fw fa-tv"></i> Series
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="seriesDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="contentService.loadContent('popular', 'tv')">Popular</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="contentService.loadContent('trending', 'tv')">Tendencias</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="contentService.loadContent('favorites', 'tv')">Favoritas</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <!-- Formulario de búsqueda -->
+                <form class="d-flex" id="searchForm">
+                    <input class="form-control me-2" type="search" placeholder="Buscar por título" aria-label="Buscar"
+                        id="searchInput">
+                    <button class="btn btn-outline-light" type="submit">Buscar</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Columna vacía para espaciar (Opcional) -->
+            <div class="col-md-1 sidebar-spacer"></div>
+            <div class="col-md-2">
+                <h4 id="page-title">Series</h4>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Columna vacía para espaciar (Opcional) -->
+            <div class="col-md-1 sidebar-spacer"></div>
+
+            <!-- Menú de Filtros -->
+            <div class="col-md-2 filters-column" id="filtersColumn">
+                <!-- Card: Ordenar -->
+                <div class="card shadow-sm mb-3 filter-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="filter-title mb-0">Ordenar</h5>
+                        <button class="btn btn-link p-0 text-dark" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOrder" aria-expanded="true" aria-controls="collapseOrder">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div id="collapseOrder" class="collapse show">
+                        <div class="card-body">
+                            <select class="form-select" id="sortFilter">
+                                <option value="popularity.desc">Popularidad descendente</option>
+                                <option value="popularity.asc">Popularidad ascendente</option>
+                                <option value="vote_average.desc">Valoración descendente</option>
+                                <option value="vote_average.asc">Valoración ascendente</option>
+                                <option value="first_air_date.desc">Fecha de estreno descendente</option>
+                                <option value="first_air_date.asc">Fecha de estreno ascendente</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card: Filtros -->
+                <div class="card shadow-sm mb-3 filter-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="filter-title mb-0">Filtros</h5>
+                        <button class="btn btn-link p-0 text-dark" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseFilters" aria-expanded="true" aria-controls="collapseFilters">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div id="collapseFilters" class="collapse show">
+                        <div class="card-body">
+                            <h6><strong>Fecha de estreno</strong></h6>
+                            <div class="filter-date mb-3">
+                                <label for="startDate" class="form-label">Desde:</label>
+                                <input type="date" id="startDate" class="form-control">
+                            </div>
+                            <div class="filter-date mb-3">
+                                <label for="endDate" class="form-label">Hasta:</label>
+                                <input type="date" id="endDate" class="form-control">
+                            </div>
+                            <hr>
+                            <h6><strong>Proveedores Suscritos</strong></h6>
+                            <div id="subscribed-providers" class="d-flex flex-wrap"></div>
+                            <button class="btn custom-btn btn-primary mt-2" data-bs-toggle="modal"
+                                data-bs-target="#providersModal"  id = "providersModalButton">
+                                Seleccionar
+                            </button>
+                            <div class="mt-3" id="providers-list">
+                                <!-- Proveedores seleccionados dinámicamente aquí -->
+                            </div>
+                                                    <!-- Botones Aplicar/Eliminar -->
+                        <div class="text-center mb-3">
+                            <div class="d-flex justify-content-center gap-2">
+                                <button class="btn custom-btn btn-primary" id="filterApplyButton">Aplicar</button>
+                                <button class="btn custom-btn btn-danger" id="filterResetButton">Eliminar</button>
+                            </div>
+                        </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Contenido Principal: Tarjetas de Películas/Series -->
+            <div class="col-md-7">
+                <div class="row g-3" id="content-list">
+                    <!-- Se cargan las tarjetas dinámicamente -->
+                </div>
+                <!-- Paginación -->
+                <nav aria-label="Page navigation" class="mt-3">
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <!-- Paginación dinámica -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detalle -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel">Detalle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex align-items-start">
+                        <!-- Imagen -->
+                        <div id="detail-image" class="me-3"></div>
+                        <!-- Contenido -->
+                        <div>
+                            <h5 id="detail-title"></h5>
+                            <p><strong>Fecha de estreno:</strong> <span id="detail-date"></span></p>
+                            <p><strong>Sinopsis:</strong></p>
+                            <p id="detail-overview"></p>
+                            <div id="detail-providers" class="mt-3">
+                                <h6><strong>Disponible en:</strong></h6>
+                                <div class="d-flex flex-wrap"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para seleccionar proveedores -->
+    <div class="modal fade" id="providersModal" tabindex="-1" aria-labelledby="providersModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="providersModalLabel">Seleccionar Proveedores</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="providers-container" class="row">
+                        <!-- Proveedores cargados dinámicamente aquí -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="save-providers-button" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cargando -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-body">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-3">Cargando, por favor espera...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JS Personalizado -->
+    <script src="js/scripts.js"></script>
+</body>
+
+</html>

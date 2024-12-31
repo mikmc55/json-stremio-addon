@@ -1,0 +1,7 @@
+MYSQL_ROOT_PASSWORD=root_password
+MYSQL_DATABASE=stremio_db
+MYSQL_USER=stremio_user
+MYSQL_PASSWORD=stremio_password
+SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/stremio_db
+SPRING_DATASOURCE_USERNAME=stremio_user
+SPRING_DATASOURCE_PASSWORD=stremio_password

@@ -5,7 +5,7 @@
 
 	<groupId>com.stremio.addon</groupId>
 	<artifactId>stremio-addon</artifactId>
-	<version>1.0.0</version>
+	<version>0.0.2</version>
 	<packaging>jar</packaging>
 
 	<name>Stremio Addon</name>

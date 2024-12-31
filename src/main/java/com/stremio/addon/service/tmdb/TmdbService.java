@@ -1,10 +1,11 @@
 package com.stremio.addon.service.tmdb;
 
 import com.stremio.addon.configuration.TmdbConfiguration;
-import com.stremio.addon.service.tmdb.dto.MovieDetail;
-import com.stremio.addon.service.tmdb.dto.PaginatedMovies;
-import com.stremio.addon.service.tmdb.dto.PaginatedTvShows;
-import com.stremio.addon.service.tmdb.dto.TvShowDetail;
+import com.stremio.addon.controller.dto.ProviderDto;
+import com.stremio.addon.mapper.ProviderMapper;
+import com.stremio.addon.model.ProviderModel;
+import com.stremio.addon.repository.ProviderRepository;
+import com.stremio.addon.service.tmdb.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,28 +20,31 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
 public class TmdbService {
 
-    private final TmdbConfiguration configuration;
-    private final RestTemplate restTemplate;
-
     private static final Map<String, String> CONTENT_TYPE_MAP = Map.of(
             "movie", "movie_results",
             "series", "tv_results"
     );
-
     private static final Map<String, String> TITLE_KEY_MAP = Map.of(
             "movie", "title",
             "series", "name"
     );
+    private final TmdbConfiguration configuration;
+    private final RestTemplate restTemplate;
+    private final ProviderRepository providerRepository;
 
     @Autowired
-    public TmdbService(TmdbConfiguration configuration, @Qualifier("restTemplateJson") RestTemplate restTemplate) {
+    public TmdbService(TmdbConfiguration configuration, @Qualifier("restTemplateJson") RestTemplate restTemplate, ProviderRepository providerRepository) {
         this.configuration = configuration;
         this.restTemplate = restTemplate;
+        this.providerRepository = providerRepository;
     }
 
     /**
@@ -220,8 +224,166 @@ public class TmdbService {
     }
 
     /**
-     * Functional interface for processing responses.
+     * Discover movies with advanced search filters.
+     *
+     * @param params A map of query parameters (e.g., "release_date.gte", "genres", etc.)
+     * @return A paginated list of movies.
      */
+    public PaginatedMovies discoverMovies(Map<String, String> params) {
+        StringBuilder urlBuilder = new StringBuilder(String.format("%s/discover/movie?language=es-ES", configuration.getApiUrl()));
+        params.forEach((key, value) -> urlBuilder.append("&").append(key).append("=").append(value));
+        String url = urlBuilder.toString();
+        // logRequest("Discover Movies", url, params);
+        return executeRequest(url, PaginatedMovies.class);
+    }
+
+    /**
+     * Discover TV shows with advanced search filters.
+     *
+     * @param params A map of query parameters (e.g., "first_air_date.gte", "genres", etc.)
+     * @return A paginated list of TV shows.
+     */
+    public PaginatedTvShows discoverTvShows(Map<String, String> params) {
+        StringBuilder urlBuilder = new StringBuilder(String.format("%s/discover/tv?language=es-ES", configuration.getApiUrl()));
+        params.forEach((key, value) -> urlBuilder.append("&").append(key).append("=").append(value));
+        String url = urlBuilder.toString();
+        //    logRequest("Discover TV Shows", url, params);
+        return executeRequest(url, PaginatedTvShows.class);
+    }
+
+    /**
+     * Fetch watch providers for TV shows.
+     * Retrieves the available streaming providers for TV content.
+     *
+     * @return A response object containing the list of providers.
+     */
+    public ProvidersResponse getTvWatchProviders() {
+        String url = String.format("%s/watch/providers/tv?language=es-ES&watch_region=ES", configuration.getApiUrl());
+        logRequest("Get TV Watch Providers", url, Map.of());
+        return executeRequest(url, ProvidersResponse.class);
+    }
+
+    /**
+     * Fetch watch providers for Movies.
+     * Retrieves the available streaming providers for Movie content.
+     *
+     * @return A response object containing the list of providers.
+     */
+    public ProvidersResponse getMovieProviders() {
+        String url = String.format("%s/watch/providers/movie?language=es-ES&watch_region=ES", configuration.getApiUrl());
+        logRequest("Get TV Watch Providers", url, Map.of());
+        return executeRequest(url, ProvidersResponse.class);
+    }
+
+    public void saveUserProviders(List<ProviderDto> providers) {
+        Set<ProviderModel> existingProviders = StreamSupport
+                .stream(providerRepository.findAll().spliterator(), false)
+                .collect(Collectors.toSet());
+
+        Set<ProviderModel> newProviders = providers.stream()
+                .map(ProviderMapper.INSTANCE::map)
+                .collect(Collectors.toSet());
+
+        // Filtrar los proveedores que no están en la base de datos y deben ser guardados
+        Set<ProviderModel> toAdd = newProviders.stream()
+                .filter(provider -> !contains(existingProviders, provider))
+                .collect(Collectors.toSet());
+
+        // Filtrar los proveedores que están en la base de datos pero no en el nuevo listado y deben ser eliminados
+        Set<ProviderModel> toRemove = existingProviders.stream()
+                .filter(provider -> !contains(newProviders, provider))
+                .collect(Collectors.toSet());
+
+        // Guardar los nuevos proveedores
+        if (!toAdd.isEmpty()) {
+            providerRepository.saveAll(toAdd);
+            log.info("Providers added: {}", toAdd);
+        }
+
+        // Eliminar los proveedores obsoletos
+        if (!toRemove.isEmpty()) {
+            providerRepository.deleteAll(toRemove);
+            log.info("Providers removed: {}", toRemove);
+        }
+    }
+
+    private boolean contains(Set<ProviderModel> providers, ProviderModel provider) {
+        return !providers.stream()
+                .filter(providerModel -> providerModel.getProviderId().equals(provider.getProviderId()))
+                .toList()
+                .isEmpty();
+    }
+
+    public List<ProviderDto> getUserProviders() {
+        return StreamSupport
+                .stream(providerRepository.findAll().spliterator(), false)
+                .map(ProviderMapper.INSTANCE::map)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Fetch watch providers by Movie ID.
+     *
+     * @param movieId The ID of the movie.
+     * @return A map containing the watch providers for the movie.
+     */
+    public WatchProviders getWatchProvidersByMovieId(int movieId) {
+        String url = String.format("%s/movie/%d/watch/providers", configuration.getApiUrl(), movieId);
+        logRequest("Get Watch Providers", url, Map.of("Movie ID", movieId));
+        return executeRequest(url, WatchProviders.class);
+    }
+
+    /**
+     * Fetch watch providers by Series ID.
+     *
+     * @param seriesId The ID of the movie.
+     * @return A map containing the watch providers for the movie.
+     */
+    public WatchProviders getWatchProvidersBySeriesId(int seriesId) {
+        String url = String.format("%s/tv/%d/watch/providers", configuration.getApiUrl(), seriesId);
+        logRequest("Get Watch Providers", url, Map.of("Series ID", seriesId));
+        return executeRequest(url, WatchProviders.class);
+    }
+
+    public List<ProviderDto> getTvWatchProviders(Integer id) {
+        WatchProviders watchProviders = getWatchProvidersBySeriesId(id);
+        return getProviders(watchProviders);
+    }
+
+    public List<ProviderDto> getMovieWatchProviders(Integer id) {
+        WatchProviders watchProviders = getWatchProvidersByMovieId(id);
+ 		return getProviders(watchProviders);
+    }
+
+    private List<ProviderDto> getProviders(WatchProviders watchProviders) {
+        if (watchProviders.getResults().isEmpty())
+            return List.of();
+        else{
+            var providers = watchProviders.getResults().get("ES");
+            if (providers == null)
+                return List.of();
+            else {
+                var result = ProviderMapper.INSTANCE.map(providers.getRent());
+                return result == null ? List.of(): result;
+            }
+        }
+    }
+
+    /**
+     * Buscar películas o series por título.
+     *
+     * @param query Término de búsqueda.
+     * @param page Número de página para la paginación.
+     * @return Resultados paginados de la búsqueda.
+     */
+    public PaginatedSearchResults search(String query, int page) {
+        String url = String.format("%s/search/multi?query=%s&language=es-ES&page=%d",
+                configuration.getApiUrl(), query, page);
+        logRequest("Search Movies/Series", url, Map.of("Query", query, "Page", page));
+        return executeRequest(url, PaginatedSearchResults.class);
+    }
+
+
     @FunctionalInterface
     private interface ResponseProcessor<T, R> {
         R process(T response);

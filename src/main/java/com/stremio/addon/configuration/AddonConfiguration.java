@@ -10,6 +10,8 @@ import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 
@@ -18,8 +20,6 @@ import java.util.Arrays;
 @Data
 public class AddonConfiguration {
     private String name;
-    @Value("${addon.searchers.file.path}")
-    private String storageDir;
     @Value("${addon.jackett.apiKey}")
     private String apiKey;
 
@@ -48,6 +48,19 @@ public class AddonConfiguration {
         ));
 
         return xmlConverter;
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**") // Aplica a todos los endpoints
+                        .allowedOrigins("*") // Orígenes permitidos
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos HTTP permitidos
+                        .allowedHeaders("*"); // Permite todos los encabezados
+            }
+        };
     }
 
 }
