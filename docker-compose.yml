@@ -25,7 +25,7 @@ services:
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-stremio_user}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-stremio_password}
     ports:
-      - "8080:8080"
+      - "7010:7010"
     networks:
       - stremio_network
 

@@ -1,13 +1,17 @@
 package com.stremio.addon.service;
 
 import com.stremio.addon.service.tmdb.TmdbService;
+import com.stremio.addon.service.tmdb.dto.Movie;
+import com.stremio.addon.service.tmdb.dto.TvShow;
 import com.stremio.addon.service.tmdb.dto.TvShowDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -162,4 +166,67 @@ public class FavoritesService {
 
         throw new RuntimeException("No IMDb ID found for TMDB ID: " + mediaId);
     }
+
+    /**
+     * Scheduled method that verifies and saves favorite movies and TV shows.
+     * This method runs every hour to ensure that the favorites are up to date.
+     * It processes favorite movies and TV shows by fetching them from the TMDB service
+     * based on their popularity.
+     */
+    @Scheduled(fixedRate = 3600000) // Ejecutar cada hora
+    public void verifyAndSaveFavorites() {
+        log.info("Starting favorite verification...");
+
+        try {
+            // Process favorite movies
+            processFavorites(
+                    "movie",
+                    page -> tmdbService.getFavoriteMovies(page, "popularity.desc").getResults()
+            );
+
+            // Process favorite TV shows
+            processFavorites(
+                    "tv",
+                    page -> tmdbService.getFavoriteTvShows(page, "popularity.desc").getResults()
+            );
+
+            log.info("Favorite verification completed successfully.");
+        } catch (Exception e) {
+            log.error("Error during favorite verification: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Processes and manages favorite media items (movies or TV shows).
+     * This method fetches paginated results using the provided fetch function
+     * and manages each favorite item by calling the manageFavorite method.
+     *
+     * @param mediaType     the type of media being processed (e.g., "movie" or "tv")
+     * @param fetchFunction a function that takes a page number and returns a list of media items
+     * @param <T>           the type of media items (either Movie or TvShow)
+     */
+    private <T> void processFavorites(String mediaType, Function<Integer, List<T>> fetchFunction) {
+        int page = 1;
+        while (true) {
+            List<T> results = fetchFunction.apply(page);
+            if (results.isEmpty()) break;
+
+            results.forEach(item -> {
+                long mediaId;
+                if (item instanceof Movie movie) {
+                    mediaId = movie.getId();
+                } else if (item instanceof TvShow tvShow) {
+                    mediaId = tvShow.getId();
+                } else {
+                    throw new IllegalArgumentException("Unsupported media type");
+                }
+
+                manageFavorite(mediaId, mediaType, true);
+            });
+
+            if (page >= results.size()) break; // If the total number of pages is reached, stop
+            page++;
+        }
+    }
+
 }
