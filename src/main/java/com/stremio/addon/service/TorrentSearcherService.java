@@ -32,7 +32,6 @@ public class TorrentSearcherService {
         return repository.findAll();
     }
 
-
     /**
      * Delete a searcher from the JSON file.
      */

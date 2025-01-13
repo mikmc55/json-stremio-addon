@@ -19,7 +19,7 @@ public class SeriesEliteTorrentSearcher extends SeriesTorrentSearcher implements
     }
 
     @Override
-    public List<Stream> search(String title, String... args) {
+    public List<String> searchTorrents(String title, String... args) {
         return List.of();
     }
 }

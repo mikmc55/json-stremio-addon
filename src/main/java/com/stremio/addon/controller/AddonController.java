@@ -1,27 +1,32 @@
+
 package com.stremio.addon.controller;
 
-import com.stremio.addon.controller.dto.CatalogContainer;
-import com.stremio.addon.controller.dto.Manifest;
 import com.stremio.addon.controller.dto.AddonSearchResult;
+import com.stremio.addon.controller.dto.Manifest;
 import com.stremio.addon.service.AddonSearchService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
+@Slf4j
 @RestController
 @RequestMapping(produces = "application/json") // Indica que todos los endpoints deben devolver JSON
+@Validated
+@RequiredArgsConstructor
 public class AddonController {
 
-    @Autowired
-    private AddonSearchService addonSearchService;
+    private final AddonSearchService addonSearchService;
 
-    // Ruta para las series con temporada y episodio
     @GetMapping(value = "/stream/series/{id}:{season}:{episode}.json", produces = "application/json")
     @CrossOrigin
-    public AddonSearchResult seriesStreamHandler(@PathVariable String id,
-                                                 @PathVariable(required = false) String season,
-                                                 @PathVariable(required = false) String episode) {
+    public AddonSearchResult seriesStreamHandler(
+            @PathVariable @NotBlank @Pattern(regexp = "^[a-zA-Z0-9_-]+$") String id,
+            @PathVariable(required = false) String season,
+            @PathVariable(required = false) String episode) {
+        log.info("Fetching streams for series: id={}, season={}, episode={}", id, season, episode);
         var streams = addonSearchService.searchSeriesTorrent(id, season, episode);
         return AddonSearchResult.builder()
                 .streams(streams)
@@ -30,7 +35,9 @@ public class AddonController {
 
     @GetMapping(value = "/stream/movie/{id}.json", produces = "application/json")
     @CrossOrigin
-    public AddonSearchResult movieStreamHandler(@PathVariable String id) {
+    public AddonSearchResult movieStreamHandler(
+            @PathVariable @NotBlank @Pattern(regexp = "^[a-zA-Z0-9_-]+$") String id) {
+        log.info("Fetching streams for movie: id={}", id);
         var streams = addonSearchService.searchMoviesTorrent(id);
         return AddonSearchResult.builder()
                 .streams(streams)
@@ -40,12 +47,7 @@ public class AddonController {
     @GetMapping(value = "/manifest.json", produces = "application/json")
     @CrossOrigin
     public Manifest getManifest() {
+        log.info("Fetching addon manifest");
         return addonSearchService.getManifest();
-    }
-
-    @RequestMapping(value = {"/catalog/{type}/{id}.json", "/catalog/{type}/{id}/{extra}.json"}, produces = "application/json")
-    @CrossOrigin
-    public CatalogContainer getCatalog(@PathVariable("type") String type, @PathVariable("id") String id, @PathVariable("extra") String extra) {
-        return addonSearchService.getCatalog(type, id, extra);
     }
 }

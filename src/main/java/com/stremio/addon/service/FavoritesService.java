@@ -79,12 +79,17 @@ public class FavoritesService {
     private void downloadAllEpisodes(String imdbId, long mediaId) {
         log.info("Fetching details for TV show with IMDb ID {}", imdbId);
 
-        Optional.ofNullable(tmdbService.getTvShowDetail((int) mediaId))
-                .map(TvShowDetail::getSeasons)
-                .ifPresentOrElse(
-                        seasons -> processSeasons(seasons, imdbId),
-                        () -> log.warn("No seasons found for TV show with IMDb ID {}", imdbId)
-                );
+        try {
+            Optional.ofNullable(tmdbService.getTvShowDetail((int) mediaId))
+                    .map(TvShowDetail::getSeasons)
+                    .ifPresentOrElse(
+                            seasons -> processSeasons(seasons, imdbId),
+                            () -> log.warn("No seasons found for TV show with IMDb ID {}", imdbId)
+                    );
+        } catch (Exception e) {
+            log.error("Error fetching details for TV show with IMDb ID {}: {}", imdbId, e.getMessage());
+            throw new RuntimeException("Error fetching TV show details: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -146,22 +151,29 @@ public class FavoritesService {
         log.info("Fetching IMDb identifier for {} with TMDB ID {}", mediaType, mediaId);
 
         try {
-            if ("movie".equals(mediaType)) {
-                var movieDetail = tmdbService.getMovieDetail((int) mediaId);
-                if (movieDetail != null && movieDetail.getImdbId() != null) {
-                    log.info("Found IMDb identifier for movie: {}", movieDetail.getImdbId());
-                    return movieDetail.getImdbId();
-                }
-            } else if ("tv".equals(mediaType)) {
-                var externalIds = tmdbService.getTvShowExternalIds((int) mediaId);
-                if (externalIds != null && externalIds.get("imdb_id") != null) {
-                    String imdbId = (String) externalIds.get("imdb_id");
-                    log.info("Found IMDb identifier for TV show: {}", imdbId);
-                    return imdbId;
-                }
+            switch (mediaType) {
+                case "movie":
+                    var movieDetail = tmdbService.getMovieDetail((int) mediaId);
+                    if (movieDetail != null && movieDetail.getImdbId() != null) {
+                        log.info("Found IMDb identifier for movie: {}", movieDetail.getImdbId());
+                        return movieDetail.getImdbId();
+                    }
+                    break;
+                case "tv":
+                    var externalIds = tmdbService.getTvShowExternalIds((int) mediaId);
+                    if (externalIds != null && externalIds.get("imdb_id") != null) {
+                        String imdbId = (String) externalIds.get("imdb_id");
+                        log.info("Found IMDb identifier for TV show: {}", imdbId);
+                        return imdbId;
+                    }
+                    break;
+                default:
+                    log.error("Unsupported media type: {}", mediaType);
+                    throw new IllegalArgumentException("Unsupported media type: " + mediaType);
             }
         } catch (Exception e) {
             log.error("Error fetching IMDb identifier for {} with TMDB ID {}: {}", mediaType, mediaId, e.getMessage());
+            throw new RuntimeException("Error fetching IMDb identifier: " + e.getMessage(), e);
         }
 
         throw new RuntimeException("No IMDb ID found for TMDB ID: " + mediaId);

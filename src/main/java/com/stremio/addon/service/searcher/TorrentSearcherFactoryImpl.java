@@ -1,6 +1,7 @@
 package com.stremio.addon.service.searcher;
 
 import com.stremio.addon.controller.dto.TorrentSearcher;
+import com.stremio.addon.model.SearchEngineModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -19,7 +20,7 @@ public class TorrentSearcherFactoryImpl implements TorrentSearcherFactory {
     }
 
     @Override
-    public TorrentSearcherStrategy getSearcher(String type, TorrentSearcher torrentSearcher) {
+    public TorrentSearcherStrategy getSearcher(String type, SearchEngineModel torrentSearcher) {
 
         // Obtener el nombre del bean basado en el tipo de buscador
         String beanName = type + torrentSearcher.getType();

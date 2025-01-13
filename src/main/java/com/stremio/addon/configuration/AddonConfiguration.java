@@ -21,7 +21,12 @@ import java.util.Arrays;
 @EnableScheduling
 @Data
 public class AddonConfiguration {
+    @Value("${addon.name}")
     private String name;
+    @Value("${addon.download.path}")
+    private String downloadPath;
+    @Value("${addon.videos.path}")
+    private String videosPath;
     @Value("${addon.jackett.apiKey}")
     private String apiKey;
 

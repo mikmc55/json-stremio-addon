@@ -1,17 +1,22 @@
 package com.stremio.addon.service;
 
-import com.stremio.addon.controller.dto.*;
-import com.stremio.addon.mapper.StreamMapper;
+import com.stremio.addon.controller.dto.Catalog;
+import com.stremio.addon.controller.dto.CatalogContainer;
+import com.stremio.addon.controller.dto.Manifest;
+import com.stremio.addon.controller.dto.Stream;
+import com.stremio.addon.mapper.TorrentMapper;
+import com.stremio.addon.model.SearchEngineModel;
 import com.stremio.addon.model.SearchModel;
-import com.stremio.addon.model.StreamModel;
+import com.stremio.addon.model.TorrentInfoModel;
+import com.stremio.addon.repository.SearchEngineRepository;
 import com.stremio.addon.repository.SearchRepository;
-import com.stremio.addon.repository.TorrentSearcherRepository;
 import com.stremio.addon.service.searcher.TorrentSearcherFactory;
-import com.stremio.addon.service.searcher.TorrentSearcherStrategy;
 import com.stremio.addon.service.tmdb.TmdbService;
+import com.stremio.addon.service.tmdb.dto.FindResults;
+import com.stremio.addon.service.tmdb.dto.Movie;
+import com.stremio.addon.service.tmdb.dto.TvShow;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -27,137 +32,157 @@ import java.util.stream.Collectors;
 public class AddonSearchService {
 
     private final TmdbService tmdbService;
-    private final TorrentSearcherRepository searcherRepository;
+    private final SearchEngineRepository searchEngineRepository;
     private final TorrentSearcherFactory searcherFactory;
     private final SearchRepository searchRepository;
+    private final TorrentDownloaderService torrentDownloaderService;
 
     public List<Stream> searchMoviesTorrent(String id) {
         log.info("Searching movie torrents for ID: {}", id);
-        var searchList = searchRepository.findByIdentifier(id);
+        var streams = searchRepository.findByIdentifier(id)
+                .stream()
+                .flatMap(searchModel -> mapToStreams(searchModel).stream())
+                .collect(Collectors.toList());
 
-        if (!searchList.isEmpty()) {
-            return searchList.stream()
-                    .flatMap(searchModel -> mapStreams(searchModel).stream())
-                    .toList();
-        }
-
-        return searchAndSaveTorrent("movie", id);
+        return streams.isEmpty() ? searchAndSaveTorrent("movie", id) : streams;
     }
 
     public List<Stream> searchSeriesTorrent(String id, String season, String episode) {
         log.info("Searching series torrents for ID: {}, Season: {}, Episode: {}", id, season, episode);
         return searchRepository.findByIdentifierAndSeasonAndEpisode(id, parseInteger(season), parseInteger(episode))
-                .map(this::mapStreams)
+                .map(this::mapToStreams)
                 .orElseGet(() -> searchAndSaveTorrent("series", id, season, episode));
     }
 
     @Async
     public void fetchAndSaveMovie(String id) {
         log.info("Asynchronously fetching and saving movie with ID: {}", id);
-        var searchList = searchRepository.findByIdentifier(id);
-
-        if (!searchList.isEmpty()) {
-            log.info("Movie already exists in database: {}", id);
-            CompletableFuture.completedFuture(null);
-        } else {
-            CompletableFuture.runAsync(() -> searchAndSaveTorrent("movie", id));
-        }
-
+        handleFetchAndSave(id, "movie");
     }
 
     @Async
     public void fetchAndSaveSeries(String id, String season, String episode) {
         log.info("Asynchronously fetching and saving series with ID: {}, Season: {}, Episode: {}", id, season, episode);
-        searchRepository.findByIdentifierAndSeasonAndEpisode(id, parseInteger(season), parseInteger(episode))
-                .map(search -> {
-                    log.info("Series already exists in database: {} (Season {}, Episode {})", id, season, episode);
-                    return CompletableFuture.completedFuture(null); // Retorno explícito de CompletableFuture<Void>
-                })
-                .orElseGet(() -> {
-                    CompletableFuture.runAsync(() -> searchAndSaveTorrent("series", id, season, episode));
-                    return CompletableFuture.completedFuture(null); // Asegura que el tipo de retorno coincida
-                });
+        handleFetchAndSave(id, "series", season, episode);
+    }
+
+    private void handleFetchAndSave(String id, String type, String... args) {
+        var searchList = searchRepository.findByIdentifier(id);
+        if (searchList.isEmpty()) {
+            CompletableFuture.runAsync(() -> searchAndSaveTorrent(type, id, args));
+        } else {
+            searchList.stream()
+                    .filter(search -> search.getTorrents() == null || search.getTorrents().isEmpty())
+                    .forEach(search -> CompletableFuture.runAsync(() -> searchAndSaveTorrent(type, id, args)));
+        }
     }
 
     private List<Stream> searchAndSaveTorrent(String type, String id, String... args) {
-        List<Stream> streams = searchTorrent(type, id, args);
-        if ("movie".equals(type)) {
-            saveSearchMovies(id, streams);
-        } else {
-            saveSearchSeries(id, args[0], args[1], streams);
+        try {
+            var result = tmdbService.findById(id, type);
+            return "movie".equals(type)
+                    ? processMovie(result, id, args)
+                    : processTvShow(result, id, args);
+        } catch (Exception e) {
+            throw handleException("Error during torrent search and save", e);
         }
-        return streams;
     }
 
-    private List<Stream> mapStreams(SearchModel searchModel) {
-        return searchModel.getStreams().stream()
-                .map(StreamMapper.INSTANCE::map)
-                .toList();
+    private List<Stream> processMovie(FindResults result, String id, String... args) {
+        var movie = result.getMovieResults().stream().findFirst()
+                .orElseThrow(() -> handleException("Movie not found for ID: " + id, null));
+        var title = movie.getTitle();
+        var year = extractYear(movie.getReleaseDate());
+        var torrents = searchTorrent("movie", id, title, args);
+
+        if (torrents.isEmpty()) {
+            log.info("No torrents found for movie: [{}] [{}]", id, title);
+            return List.of();
+        }
+
+        return mapToStreams(saveSearchMovies(id, title, year, torrents));
     }
 
-    private List<Stream> searchTorrent(String type, String id, String... args) {
+    private List<Stream> processTvShow(FindResults result, String id, String... args) {
+        var tvShow = result.getTvResults().stream().findFirst()
+                .orElseThrow(() -> handleException("TV Show not found for ID: " + id, null));
+        var title = tvShow.getName();
+        var torrents = searchTorrent("series", id, title, args);
+
+        if (torrents.isEmpty()) {
+            log.info("No torrents found for series: [{}] [{}] [{}]", id, title, args);
+            return List.of();
+        }
+
+        return mapToStreams(saveSearchSeries(id, title, parseInteger(args[0]), parseInteger(args[1]), torrents));
+    }
+
+    private List<String> searchTorrent(String type, String id, String title, String... args) {
         log.info("Searching torrents for type [{}] with ID [{}] and args [{}]", type, id, args);
-        String title = tmdbService.getTitle(id, type);
-
-        return searcherRepository.findAll().parallelStream()
+        return searchEngineRepository.findByActive(true).parallelStream()
                 .peek(provider -> log.info("Searching in provider: {}", provider.getName()))
-                .flatMap(provider -> searchProvider(title, args, type, provider).stream())
+                .flatMap(provider -> searchTorrentByProvider(title, args, type, provider).stream())
                 .collect(Collectors.toList());
     }
 
-    private List<Stream> searchProvider(String title, String[] args, String type, TorrentSearcher provider) {
+    private List<String> searchTorrentByProvider(String title, String[] args, String type, SearchEngineModel provider) {
         try {
-            TorrentSearcherStrategy searcher = searcherFactory.getSearcher(type, provider);
-            return searcher.search(title, args);
+            var searcher = searcherFactory.getSearcher(type, provider);
+            return searcher.searchTorrents(title, args);
         } catch (Exception e) {
             log.error("Error searching torrents with provider {}: {}", provider.getName(), e.getMessage());
             return List.of();
         }
     }
 
-    private void saveSearchMovies(String id, List<Stream> streams) {
-        saveSearch(SearchModel.builder()
-                .identifier(id)
-                .type("movie")
-                .streams(mapToSet(streams))
-                .searchTime(LocalDateTime.now())
-                .build());
+    private SearchModel saveSearchMovies(String id, String title, String year, List<String> torrents) {
+        return saveSearch(id, title, "movie", torrents, Integer.parseInt(year), null, null);
     }
 
-    private void saveSearchSeries(String id, String season, String episode, List<Stream> streams) {
-        saveSearch(SearchModel.builder()
-                .identifier(id)
-                .type("series")
-                .season(parseInteger(season))
-                .episode(parseInteger(episode))
-                .streams(mapToSet(streams))
-                .searchTime(LocalDateTime.now())
-                .build());
+    private SearchModel saveSearchSeries(String id, String title, Integer season, Integer episode, List<String> torrents) {
+        return saveSearch(id, title, "series", torrents, null, season, episode);
     }
 
-    private void saveSearch(SearchModel searchModel) {
+    private SearchModel saveSearch(String id, String title, String type, List<String> torrents, Integer year, Integer season, Integer episode) {
+        log.info("Saving search for {}: [{}] [{}]", type, id, title);
         try {
-            searchRepository.save(searchModel);
-            log.info("Saved search: {}", searchModel.getIdentifier());
+            return searchRepository.findByIdentifierAndSeasonAndEpisode(id, season, episode)
+                    .map(search -> {
+                search.setTorrents(mapToSetTorrents(torrents));
+                return searchRepository.save(search);
+            }).orElseGet(() -> {
+                var newSearch = SearchModel.builder()
+                        .identifier(id)
+                        .type(type)
+                        .title(title)
+                        .year(year)
+                        .season(season)
+                        .episode(episode)
+                        .torrents(mapToSetTorrents(torrents))
+                        .searchTime(LocalDateTime.now())
+                        .build();
+                return searchRepository.save(newSearch);
+            });
         } catch (Exception e) {
             throw handleException("Error saving search", e);
         }
     }
 
-    public void deleteReferences(String id) {
-        try {
-            log.info("Deleting references for ID {}", id);
-            searchRepository.findByIdentifier(id)
-                    .forEach(searchModel -> searchRepository.deleteById(searchModel.getId()));
-
-            log.info("Successfully deleted references for ID {}", id);
-        } catch (Exception e) {
-            throw handleException("Error deleting references for ID: " + id, e);
+    private List<Stream> mapToStreams(SearchModel searchModel) {
+        if (searchModel == null || searchModel.getTorrents() == null) {
+            return List.of();
         }
+        return searchModel.getTorrents().stream()
+                .map(TorrentMapper.INSTANCE::map)
+                .collect(Collectors.toList());
     }
 
-    private Set<StreamModel> mapToSet(List<Stream> list) {
-        return list.stream().map(StreamMapper.INSTANCE::map).collect(Collectors.toSet());
+    private Set<TorrentInfoModel> mapToSetTorrents(List<String> torrents) {
+        return torrents.stream()
+                .map(torrentDownloaderService::downloadTorrent)
+                .filter(bytes -> bytes != null && bytes.length > 0)
+                .map(TorrentMapper.INSTANCE::map)
+                .collect(Collectors.toSet());
     }
 
     private int parseInteger(String value) {
@@ -168,13 +193,24 @@ public class AddonSearchService {
         }
     }
 
+    private String extractYear(String date) {
+        return date != null && date.length() >= 4 ? date.substring(0, 4) : "N/A";
+    }
+
     private RuntimeException handleException(String message, Exception e) {
-        if (e instanceof DbActionExecutionException) {
-            log.error("{} - Cause: {}", message, e.getCause().getMessage());
-            return new RuntimeException(message, e);
-        }
-        log.error("{} - Cause: {}", message, e.getMessage());
+        log.error("{} - Cause: {}", message, e != null ? e.getMessage() : "Unknown");
         return new RuntimeException(message, e);
+    }
+    public void deleteReferences(String id) {
+        try {
+            log.info("Deleting references for ID {}", id);
+            searchRepository.findByIdentifier(id)
+                    .forEach(searchModel -> searchRepository.deleteById(searchModel.getId()));
+
+            log.info("Successfully deleted references for ID {}", id);
+        } catch (Exception e) {
+            throw handleException("Error deleting references for ID: " + id, e);
+        }
     }
 
     public Manifest getManifest() {
@@ -212,8 +248,4 @@ public class AddonSearchService {
         );
     }
 
-    public CatalogContainer getCatalog(String type, String id, String extra) {
-        log.info("Getting [{}] in catalog [{}] with extra data [{}]", type, id, extra);
-        return CatalogContainer.builder().build();
-    }
 }

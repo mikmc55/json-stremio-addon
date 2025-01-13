@@ -56,6 +56,26 @@ public class TmdbService {
         return executeRequest(url, Map.class, response -> extractTitle(response, contentType, imdbId));
     }
 
+    /**
+     * Buscar información por ID en TMDB.
+     *
+     * Este método utiliza la API de TMDB para buscar información sobre películas, series o personas
+     * usando un ID específico y un origen externo.
+     *
+     * @param id El ID a buscar.
+     * @param externalSource El origen externo (por ejemplo, "imdb_id", "tvdb_id").
+     * @return Un objeto Map que contiene los resultados.
+     */
+    public FindResults findById(String id, String externalSource) {
+        String url = String.format("%s/find/%s?external_source=imdb_id&language=es-ES",
+                configuration.getApiUrl(),
+                id,
+                externalSource);
+        logRequest("Find By ID", url, Map.of("ID", id, "External Source", externalSource));
+        return executeRequest(url, FindResults.class);
+    }
+
+
     public Map<?, ?> getTvShowExternalIds(int tmdbId) {
         String url = String.format("%s/tv/%d/external_ids", configuration.getApiUrl(), tmdbId);
         return executeRequest(url, Map.class);
@@ -125,6 +145,19 @@ public class TmdbService {
         String payload = String.format("{\"media_type\": \"%s\", \"media_id\": %d, \"favorite\": %b}", mediaType, mediaId, favorite);
         logRequest("Mark As Favorite", url, Map.of("Media ID", mediaId, "Media Type", mediaType, "Favorite", favorite));
         executePostRequest(url, payload);
+    }
+
+    /**
+     * Retrieve episode details for a specific season of a TV show.
+     *
+     * @param tvShowId    The TMDB ID of the TV show.
+     * @param seasonNumber The season number to fetch.
+     * @return A list of episode details.
+     */
+    public SeasonDetail getSeasonDetails(int tvShowId, int seasonNumber) {
+        String url = String.format("%s/tv/%d/season/%d?language=es-ES", configuration.getApiUrl(), tvShowId, seasonNumber);
+        logRequest("Get Season Details", url, Map.of("TV Show ID", tvShowId, "Season Number", seasonNumber));
+        return executeRequest(url, SeasonDetail.class);
     }
 
     /**

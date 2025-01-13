@@ -23,4 +23,7 @@ public class SearchEngineModel {
 
     @Column("description")
     private String description; // Mapeado para el campo TEXT.
+
+    @Column("active")
+    private boolean active;
 }

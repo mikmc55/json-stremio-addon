@@ -199,6 +199,11 @@ const contentService = {
                             onclick="contentService.toggleFavorite(event, ${item.id}, '${type}')">
                             <i class="fas fa-heart"></i>
                         </button>
+                        <!-- Botón de descarga -->
+                        <button class="btn btn-sm btn-primary"
+                        	onclick="handleDownload('${item.id}', '${type}')">
+                            <i class="fas fa-download"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -311,6 +316,18 @@ const contentService = {
 
         } catch (error) {
             console.error('Error loading detail:', error);
+        }
+    },
+
+    handleDownload(id, type) {
+        if (type === 'movies') {
+            apiService.post(`/torrents/download/${id}`)
+                .then(() => alert('Descarga de película iniciada'))
+                .catch(error => console.error('Error al descargar película:', error));
+        } else if (type === 'tv') {
+            apiService.fetch(`/series/${id}`)
+                .then(data => showSeriesModal(data))
+                .catch(error => console.error('Error al cargar detalles de la serie:', error));
         }
     },
 
@@ -449,6 +466,41 @@ const contentService = {
 
         console.log(`[changeSearchPage] Changing to page: ${page}`);
         await this.searchByTitle(query, page);
+    },
+
+    showSeriesModal(seriesData) {
+        const modal = document.getElementById("seriesModal");
+        document.getElementById("seriesTitle").textContent = seriesData.title;
+        document.getElementById("seriesPoster").src = seriesData.posterUrl;
+        document.getElementById("seriesReleaseDate").textContent = `Fecha de estreno: ${seriesData.releaseDate}`;
+
+        const seasonsList = document.getElementById("seasonsList");
+        seasonsList.innerHTML = "";
+
+        seriesData.seasons.forEach(season => {
+            const seasonDiv = document.createElement("div");
+            seasonDiv.classList.add("season");
+
+            const seasonTitle = document.createElement("h6");
+            seasonTitle.textContent = `Temporada ${season.number}`;
+            seasonDiv.appendChild(seasonTitle);
+
+            season.episodes.forEach(episode => {
+                const episodeDiv = document.createElement("div");
+                episodeDiv.classList.add("episode");
+                episodeDiv.innerHTML = `
+                    <span>${episode.number}. ${episode.title}</span>
+                    <button class="btn btn-sm btn-primary" onclick="downloadEpisode('${episode.id}')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                `;
+                seasonDiv.appendChild(episodeDiv);
+            });
+
+            seasonsList.appendChild(seasonDiv);
+        });
+
+        new bootstrap.Modal(modal).show();
     }
 
 
@@ -704,6 +756,7 @@ const filtersManager = {
             }
         });
     },
+
     disableFilters() {
         const filtersColumn = document.querySelector('.filters-column');
         if (filtersColumn) {
@@ -812,35 +865,33 @@ const filtersManager = {
 
 };
 
-// Utility Functions for Modal Accessibility
-function setModalAccessibility(modalElement, isVisible) {
-    const mainContent = document.querySelector('.container-fluid'); // Usar otro contenedor global
-
-    if (!mainContent || !modalElement) {
-        console.warn('Main content or modal element is missing. Skipping accessibility settings.');
-        return;
-    }
-
-    if (isVisible) {
-        mainContent.setAttribute('aria-hidden', 'true');
-        mainContent.setAttribute('inert', '');
-
-        modalElement.removeAttribute('aria-hidden');
-        modalElement.removeAttribute('inert');
-        modalElement.focus();
-    } else {
-        mainContent.removeAttribute('aria-hidden');
-        mainContent.removeAttribute('inert');
-
-        modalElement.setAttribute('aria-hidden', 'true');
-        modalElement.setAttribute('inert', '');
-    }
-}
-
 // Modified Loading Modal Management
 const loadingModal = {
     modal: null,
+    // Utility Functions for Modal Accessibility
+    setModalAccessibility(modalElement, isVisible) {
+        const mainContent = document.querySelector('.container-fluid'); // Usar otro contenedor global
 
+        if (!mainContent || !modalElement) {
+            console.warn('Main content or modal element is missing. Skipping accessibility settings.');
+            return;
+        }
+
+        if (isVisible) {
+            mainContent.setAttribute('aria-hidden', 'true');
+            mainContent.setAttribute('inert', '');
+
+            modalElement.removeAttribute('aria-hidden');
+            modalElement.removeAttribute('inert');
+            modalElement.focus();
+        } else {
+            mainContent.removeAttribute('aria-hidden');
+            mainContent.removeAttribute('inert');
+
+            modalElement.setAttribute('aria-hidden', 'true');
+            modalElement.setAttribute('inert', '');
+        }
+    },
     show() {
         if (!this.modal) {
             this.modal = new bootstrap.Modal(domElements.loadingModal());
@@ -858,8 +909,8 @@ const loadingModal = {
     }
 };
 
-// Modify initializeApp to use the loading modal
-async function showLoadingModal() {
+// Initialize Application
+async function initializeApp() {
     try {
         contentService.init();
         //loadingModal.show();
@@ -880,23 +931,6 @@ async function showLoadingModal() {
     } catch (error) {
         console.error('Error in initialization:', error);
         //loadingModal.hide();
-    }
-}
-
-function hideLoadingModal() {
-    if (appState.loadingModal) {
-        console.log('[hideLoadingModal] Hiding loading modal...');
-        appState.loadingModal.hide();
-        appState.loadingModal = null;
-    }
-}
-
-// Initialize Application
-async function initializeApp() {
-    try {
-        showLoadingModal();
-    } catch (error) {
-        console.error('Error in initialization:', error);
     }
 }
 

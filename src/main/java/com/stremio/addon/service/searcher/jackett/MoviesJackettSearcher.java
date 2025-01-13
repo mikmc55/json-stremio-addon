@@ -18,10 +18,8 @@ public class MoviesJackettSearcher extends AbstractJackettSearcher {
     }
 
     @Override
-    public List<Stream> search(String title, String... args) {
-
-        return searchStreams(2000, title);
+    public List<String> searchTorrents(String title, String... args) {
+        return searchTorrents(2000, title);
     }
-
 
 }

@@ -10,73 +10,101 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service("seriesDonTorrent")
 @Scope("prototype")
 public class SeriesDonTorrentSearcher extends SeriesTorrentSearcher implements InterfaceDonTorrentSearcher {
 
+    @Override
+    public List<String> searchTorrents(String title, String... args) {
+        try {
+            log.info("Starting search for torrents for series: {}", title);
+            validateArgs(args);
+            String season = args[0];
+            String episode = args[1];
+            String searchQuery = buildSearchQuery(title, season);
+            String searchUrl = getSearchUrl(searchQuery);
+
+            Document doc = invokeUrl(searchUrl);
+            List<String> torrents = new ArrayList<>();
+
+            doc.select("a.text-decoration-none").stream()
+                    .filter(element -> isValidSeriesLink(element, searchQuery))
+                    .forEach(element -> {
+                        String seriesLink = element.attr("href");
+                        torrents.addAll(extractTorrentFromDetailPage(seriesLink, season, episode));
+                    });
+
+            log.info("Search completed. Found {} torrents.", torrents.size());
+            return torrents;
+        } catch (Exception e) {
+            throw handleException("Error occurred while searching torrents for series: " + title, e);
+        }
+    }
 
     @Override
-    public List<Stream> search(String title, String... args) {
-        String season = args[0];
-        String episode = args[1];
-        String searchQuery = normalizeText(title) + " - " + season + "ª Temporada";
-        String searchUrl = getSearchUrl(searchQuery);
+    protected List<String> extractTorrentFromDetailPage(String seriesLink, String season, String episode) {
+        try {
+            log.info("Extracting episode {} of season {} from series link: {}", episode, season, seriesLink);
+            String detailUrl = getUrl(seriesLink);
+            Document doc = invokeUrl(detailUrl);
+            String episodePattern = String.format("%sx%02d", season, Integer.parseInt(episode));
 
-        log.info("Searching for series: {}, Season: {}, Episode: {} at URL: {}", searchQuery, season, episode, searchUrl);
+            return doc.select("tr").stream()
+                    .filter(row -> isEpisodeRow(row, episodePattern))
+                    .map(this::extractTorrentLink)
+                    .flatMap(Optional::stream)
+                    .toList();
+        } catch (Exception e) {
+            throw handleException("Error occurred while extracting torrents from detail page.", e);
+        }
+    }
 
-        List<Stream> streams = new ArrayList<>();
-        Document doc = invokeUrl(searchUrl);
+    private boolean isEpisodeRow(Element row, String episodePattern) {
+        return Optional.ofNullable(row.selectFirst("td"))
+                .map(td -> td.text().contains(episodePattern))
+                .orElse(false);
+    }
 
-        for (Element element : doc.select("a.text-decoration-none")) {
+    private Optional<String> extractTorrentLink(Element row) {
+        try {
+            String torrentLink = row.select("a").attr("href");
+            if (!torrentLink.startsWith("http")) {
+                torrentLink = "http:" + torrentLink;
+            }
+            log.debug("Found torrent link: {}", torrentLink);
+            return Optional.of(torrentLink);
+        } catch (Exception e) {
+            log.error("Error extracting torrent link.", e);
+            return Optional.empty();
+        }
+    }
+
+    private boolean isValidSeriesLink(Element element, String searchQuery) {
+        try {
             String seriesTitle = element.text().trim();
             String seriesLink = element.attr("href");
-
-            log.debug("Found potential series: {}, Link: {}", seriesTitle, seriesLink);
-
-            // Check if the element corresponds to a series
-            if (seriesLink.startsWith("/serie")) {
-                log.debug("Badge found: Serie");
-
-                if (seriesTitle.toLowerCase().startsWith(searchQuery.toLowerCase())) {
-                    List<String> episodeLinks = extractTorrentFromDetailPage(seriesLink, season, episode);
-                    streams.addAll(generateStreams(title, episodeLinks));
-                }
-            }
+            return seriesLink.startsWith("/serie") && seriesTitle.toLowerCase().startsWith(searchQuery.toLowerCase());
+        } catch (Exception e) {
+            log.error("Error validating series link.", e);
+            return false;
         }
-
-        log.info("Series search completed. Found {} torrents.", streams.size());
-
-        return streams;
     }
 
-    /**
-     * Helper method to extract the episode torrent links from the series detail page.
-     */
-    @Override
-    protected List<String> extractTorrentFromDetailPage(final String seriesLink, final String season, final String episode) {
-        log.info("Extracting episode {} of season {} from series link: {}", episode, season, seriesLink);
-        List<String> torrents = new ArrayList<>();
-        String detailUrl = getUrl(seriesLink);  // Use the complete detail URL
-        Document doc = invokeUrl(detailUrl);
-        String episodePattern = String.format("%sx%02d", season, Integer.parseInt(episode));
-
-        // Find the episode in the table rows
-        for (Element row : doc.select("tr")) {
-            if (row.selectFirst("td") != null) {
-                String episodeInfo = row.selectFirst("td").text();
-                if (episodeInfo.contains(episodePattern)) {
-                    String torrentLink = row.select("a").attr("href");
-                    if (!torrentLink.startsWith("http")) {
-                        torrentLink = "http:" + torrentLink;
-                    }
-                    log.debug("Found episode link: {}", torrentLink);
-                    torrents.add(torrentLink);
-                }
-            }
-        }
-        return torrents;
+    private String buildSearchQuery(String title, String season) {
+        return normalizeText(title) + " - " + season + "ª Temporada";
     }
 
+    private void validateArgs(String... args) {
+        if (args == null || args.length < 2) {
+            throw handleException("Invalid arguments. Season and episode are required.", null);
+        }
+    }
+
+    private RuntimeException handleException(String message, Exception e) {
+        log.error(message, e);
+        return new RuntimeException(message, e);
+    }
 }

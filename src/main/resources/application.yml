@@ -26,6 +26,10 @@ addon:
     apiUrl: "https://api.themoviedb.org/3"
     apiKey: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkMjIyMWRiODNjM2MxYWIxMTM4M2Y5MDY2MTkzODAwOSIsIm5iZiI6MTcyODg4Nzc3OC41NzYxNzYsInN1YiI6IjY2NzU0OWVjMWE3YzZiYjQ3NTE2ZmM3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fSJq0Dio4tLcL2lhe7XYBMoGNltnKp_K_to3buLzg7s"
     accountId: 21340220
+  download:
+    path: ${STREMIO_DOWNLOAD_PATH:/tmp}
+  videos:
+    path: ${STREMIO_VIDEOS_PATH:/tmp}
 trakt:
   client-id: 837b293ac8605e224146e7c78485166ca12bbe8d63643e24e9e60c33de9c713a
   client-secret: 3441fa665cd1a87204d31c512d756cdf84b3589cedb985cc5af789c240a13c96

@@ -19,9 +19,9 @@ public class SeriesJackettSearcher extends AbstractJackettSearcher {
     }
 
     @Override
-    public List<Stream> search(String title, String... args) {
+    public List<String> searchTorrents(String title, String... args) {
         String season = args[0];
         String episode = args[1];
-        return searchStreams(5000, title, season, episode);
+        return searchTorrents(5000, title, season, episode);
     }
 }

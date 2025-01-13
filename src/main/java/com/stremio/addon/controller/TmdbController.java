@@ -42,10 +42,25 @@ public class TmdbController {
     /**
      * Get details of a TV show by TMDB ID.
      */
-    @GetMapping("/tv/{tmdbId}")
-    public ResponseEntity<TvShowDetail> getTvShowDetail(@PathVariable int tmdbId) {
-        TvShowDetail tvShowDetail = tmdbService.getTvShowDetail(tmdbId);
+    @GetMapping("/tv/{tvShowId}")
+    public ResponseEntity<TvShowDetail> getTvShowDetail(@PathVariable int tvShowId) {
+        TvShowDetail tvShowDetail = tmdbService.getTvShowDetail(tvShowId);
         return ResponseEntity.ok(tvShowDetail);
+    }
+
+    /**
+     * Get details of all episodes in a specific season of a TV show.
+     *
+     * @param tvShowId    The TMDB ID of the TV show.
+     * @param seasonNumber The season number to fetch.
+     * @return Details of the episodes in the season.
+     */
+    @GetMapping("/tv/{tvShowId}/season/{seasonNumber}/episodes")
+    public ResponseEntity<SeasonDetail> getSeasonDetails(
+            @PathVariable int tvShowId,
+            @PathVariable int seasonNumber) {
+        SeasonDetail seasonDetail = tmdbService.getSeasonDetails(tvShowId, seasonNumber);
+        return ResponseEntity.ok(seasonDetail);
     }
 
     /**

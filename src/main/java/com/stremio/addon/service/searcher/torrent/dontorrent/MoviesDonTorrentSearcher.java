@@ -10,70 +10,83 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service("movieDonTorrent")
 @Scope("prototype")
 public class MoviesDonTorrentSearcher extends MoviesTorrentSearcher implements InterfaceDonTorrentSearcher {
 
-    // Método para generar la URL de búsqueda basada en el título
-
-
     @Override
-    public List<Stream> search(String title, String... args) {
-        List<Stream> streams = new ArrayList<>();
-        title = normalizeText(title);
-        String searchUrl = getSearchUrl(title);
-        log.info("Searching for movie: {} at URL: {}", title, searchUrl);
+    public List<String> searchTorrents(String title, String... args) {
+        try {
+            log.info("Starting search for torrents for movie: {}", title);
+            String normalizedTitle = normalizeText(title);
+            String searchUrl = getSearchUrl(normalizedTitle);
 
-        Document doc = invokeUrl(searchUrl);
+            Document doc = invokeUrl(searchUrl);
+            List<String> torrents = new ArrayList<>();
 
-        for (Element element : doc.select("a.text-decoration-none")) {
-            String movieTitle = element.text().trim();
-            String movieLink = element.attr("href");
-            log.info("Found potential movie: {}, Link: {}", movieTitle, movieLink);
+            doc.select("a.text-decoration-none").stream()
+                    .filter(element -> isValidMovieLink(element, normalizedTitle))
+                    .forEach(element -> {
+                        String movieLink = element.attr("href");
+                        torrents.addAll(extractTorrentFromDetailPage(movieLink));
+                    });
 
-            // Verify if it's a movie based on the corresponding <span> badge
-            if (movieLink.startsWith("/pelicula")) {
-                log.info("Badge found: {}", movieLink);
-
-                // Case-insensitive comparison of titles
-                if (movieTitle.toLowerCase().startsWith(title.toLowerCase())) {
-                    List<String> torrentLinks = extractTorrentFromDetailPage(movieLink);
-                    streams.addAll(generateStreams(title, torrentLinks));
-                }
-            }
+            log.info("Search completed. Found {} torrents.", torrents.size());
+            return torrents;
+        } catch (Exception e) {
+            throw handleException("Error occurred while searching torrents for movie: " + title, e);
         }
-        log.info("Movie search completed. Found {} torrents.", streams.size());
-
-        return streams;
     }
 
     @Override
-    protected List<String> extractTorrentFromDetailPage(final String detailPageUrl) {
-        log.info("Extracting torrents from detail page: {}", detailPageUrl);
+    protected List<String> extractTorrentFromDetailPage(String detailPageUrl) {
+        try {
+            log.info("Extracting torrents from detail page: {}", detailPageUrl);
+            String detailUrl = getUrl(detailPageUrl);
 
-        List<String> torrents = new ArrayList<>();
-        String detailUrl = getUrl(detailPageUrl);
+            Document doc = invokeUrl(detailUrl);
+            List<String> torrents = doc.select("a.bg-primary").stream()
+                    .map(this::extractTorrentLink)
+                    .flatMap(Optional::stream)
+                    .toList();
 
-        // Connect to the detail page with Jsoup and include the Referer header
-        Document doc = invokeUrl(detailUrl);
+            log.info("Extracted {} torrents from detail page.", torrents.size());
+            return torrents;
+        } catch (Exception e) {
+            throw handleException("Error occurred while extracting torrents from detail page.", e);
+        }
+    }
 
-        for (Element element : doc.select("a.bg-primary")) {
+    private Optional<String> extractTorrentLink(Element element) {
+        try {
             String torrentLink = element.attr("href");
-
-            // Ensure the link has the correct scheme
             if (!torrentLink.startsWith("http")) {
                 torrentLink = "http:" + torrentLink;
             }
-
             log.info("Found torrent link: {}", torrentLink);
-            torrents.add(torrentLink);
+            return Optional.of(torrentLink);
+        } catch (Exception e) {
+            log.error("Error extracting torrent link.", e);
+            return Optional.empty();
         }
-
-        log.info("Extracted {} torrents from detail page.", torrents.size());
-
-        return torrents;
     }
 
+    private boolean isValidMovieLink(Element element, String normalizedTitle) {
+        try {
+            String movieTitle = element.text().trim();
+            String movieLink = element.attr("href");
+            return movieLink.startsWith("/pelicula") && movieTitle.toLowerCase().startsWith(normalizedTitle.toLowerCase());
+        } catch (Exception e) {
+            log.error("Error validating movie link.", e);
+            return false;
+        }
+    }
+
+    private RuntimeException handleException(String message, Exception e) {
+        log.error(message, e);
+        return new RuntimeException(message, e);
+    }
 }

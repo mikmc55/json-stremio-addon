@@ -12,5 +12,7 @@ public interface SearchRepository extends CrudRepository<SearchModel, Integer> {
     Optional<SearchModel> findByIdentifierAndSeasonAndEpisode(String imdbId, Integer season, Integer episode);
 
     void deleteByIdentifier(String id);
+
+    Optional<SearchModel> findByIdentifierAndType(String id, String movie);
 }
 

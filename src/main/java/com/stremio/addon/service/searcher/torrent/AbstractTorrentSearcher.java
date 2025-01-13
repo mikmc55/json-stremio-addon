@@ -1,7 +1,6 @@
 package com.stremio.addon.service.searcher.torrent;
 
-import com.stremio.addon.controller.dto.Stream;
-import com.stremio.addon.controller.dto.TorrentSearcher;
+import com.stremio.addon.model.SearchEngineModel;
 import com.stremio.addon.service.searcher.AbstractStreamProcessor;
 import com.stremio.addon.service.searcher.TorrentSearcherStrategy;
 import lombok.extern.slf4j.Slf4j;
@@ -10,13 +9,11 @@ import org.jsoup.nodes.Document;
 import org.springframework.web.util.UriUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 public abstract class AbstractTorrentSearcher extends AbstractStreamProcessor implements TorrentSearcherStrategy, InterfaceTorrentSearcher {
 
-    private TorrentSearcher torrentSearcher;
+    private SearchEngineModel torrentSearcher;
 
     public AbstractTorrentSearcher() {
     }
@@ -33,7 +30,7 @@ public abstract class AbstractTorrentSearcher extends AbstractStreamProcessor im
     }
 
     @Override
-    public void initialize(TorrentSearcher torrentSearcher) {
+    public void initialize(SearchEngineModel torrentSearcher) {
         this.torrentSearcher = torrentSearcher;
     }
 
@@ -64,24 +61,5 @@ public abstract class AbstractTorrentSearcher extends AbstractStreamProcessor im
         }
     }
 
-    protected List<Stream> generateStreams(String title, List<String> torrentLinks) {
-        List<Stream> streams = new ArrayList<>();
-        if (!torrentLinks.isEmpty()) {
-            for (String torrentLink : torrentLinks) {
-                log.info("Torrent link found for movie: {}", title);
-                log.info("[{}]", torrentLink);
-
-                Stream stream = Stream.builder()
-                        .name(torrentSearcher.getName())
-                        .description(getFilenameFromTorrent(torrentLink))
-                        .infoHash(getInfoHashFromTorrent(torrentLink))
-                        .sources(getTrackersFromTorrent(torrentLink))
-                        .behaviorHints(getBehaviorHintsFromTorrent(torrentLink))
-                        .build();
-                streams.add(stream);
-            }
-        }
-        return streams;
-    }
 
 }

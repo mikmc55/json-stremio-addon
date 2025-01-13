@@ -3,6 +3,7 @@ package com.stremio.addon.service.searcher.jackett;
 import com.stremio.addon.configuration.AddonConfiguration;
 import com.stremio.addon.controller.dto.Stream;
 import com.stremio.addon.controller.dto.TorrentSearcher;
+import com.stremio.addon.model.SearchEngineModel;
 import com.stremio.addon.service.searcher.AbstractStreamProcessor;
 import com.stremio.addon.service.searcher.TorrentSearcherStrategy;
 import com.stremio.addon.service.searcher.jackett.dto.CapsInfo;
@@ -25,7 +26,7 @@ public abstract class AbstractJackettSearcher extends AbstractStreamProcessor im
 
     private final AddonConfiguration addonConfiguration;
     private final RestTemplate restTemplate;
-    private TorrentSearcher torrentSearcher;
+    private SearchEngineModel torrentSearcher;
 
     protected AbstractJackettSearcher(AddonConfiguration addonConfiguration, RestTemplate restTemplate) {
         this.addonConfiguration = addonConfiguration;
@@ -33,7 +34,7 @@ public abstract class AbstractJackettSearcher extends AbstractStreamProcessor im
     }
 
     @Override
-    public void initialize(TorrentSearcher torrentSearcher) {
+    public void initialize(SearchEngineModel torrentSearcher) {
         this.torrentSearcher = torrentSearcher;
     }
 
@@ -98,6 +99,28 @@ public abstract class AbstractJackettSearcher extends AbstractStreamProcessor im
 
     public List<Stream> searchStreams(int category, String title) {
         return searchStreams(category, title, null, null);
+    }
+
+    public List<String> searchTorrents(int category, String title, String season, String episode) {
+        List<TorrentRss.TorrentItem> torrentItems = getTorrents(category, title, season, episode);
+        return generateTorrents(title, torrentItems);
+    }
+
+    private List<String> generateTorrents(String title, List<TorrentRss.TorrentItem> torrentItems) {
+        if (torrentItems == null || torrentItems.isEmpty()) {
+            log.info("No torrents found for the given criteria.");
+            return List.of();
+        }
+        return torrentItems.stream()
+                .filter(torrentItem -> torrentItem.getTitle().toLowerCase().startsWith(title.toLowerCase()))
+                .map(torrentItem -> {
+            log.info("Torrent link found for movie: {}", torrentItem.getTitle());
+            return torrentItem.getLink();
+        }).collect(Collectors.toList());
+    }
+
+    public List<String> searchTorrents(int category, String title) {
+        return searchTorrents(category, title, null, null);
     }
 
     private List<Stream> generateStreams(List<TorrentRss.TorrentItem> torrentItems) {

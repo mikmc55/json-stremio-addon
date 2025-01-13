@@ -24,6 +24,12 @@ public class SearchModel {
     @Column("identifier")
     private String identifier;
 
+    @Column("title")
+    private String title;
+
+    @Column("year")
+    private Integer year;
+
     @Column("season")
     private Integer season;
 
@@ -34,5 +40,5 @@ public class SearchModel {
     private LocalDateTime searchTime; // Mapeo para DATETIME como LocalDateTime.
 
     @MappedCollection(idColumn = "search_id")
-    private Set<StreamModel> streams;
+    private Set<TorrentInfoModel> torrents;
 }
