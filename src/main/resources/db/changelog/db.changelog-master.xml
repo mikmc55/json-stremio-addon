@@ -1,121 +1,51 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
-
-    <changeSet id="1-create-tables" author="rpendolero">
-        <createTable tableName="search_engine">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="url" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="name" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="type" type="varchar(30)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="text"/>
-            <column name="active" type="TINYINT(1)" defaultValue="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <createTable tableName="search">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="type" type="enum('series','movie')">
-                <constraints nullable="false"/>
-            </column>
-            <column name="title" type="varchar(250)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="identifier" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="year" type="int"/>
-            <column name="season" type="int"/>
-            <column name="episode" type="int"/>
-            <column name="search_time" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <createTable tableName="provider">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="provider_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="provider_name" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="logo_path" type="varchar(255)"/>
-        </createTable>
-
-        <createTable tableName="torrent_info">
-            <column name="id" type="INT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="search_id" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="name" type="VARCHAR(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="VARCHAR(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="content" type="LONGBLOB">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addForeignKeyConstraint
-                baseTableName="torrent_info" baseColumnNames="search_id"
-                referencedTableName="search" referencedColumnNames="id"
-                constraintName="torrent_info_search_FK"
-                onDelete="CASCADE"/>
-
-        <createIndex indexName="torrent_info_search_FK" tableName="torrent_info">
-            <column name="search_id"/>
-        </createIndex>
-    </changeSet>
-
-    <changeSet id="2-insert-search-engine-data" author="author">
-        <insert tableName="search_engine">
-            <column name="url" value="http://rojotorrent.com"/>
-            <column name="name" value="RojoTorrent"/>
-            <column name="type" value="DonTorrent"/>
-            <column name="description" value="Rojo Torrent"/>
-            <column name="active" value="1"/>
-        </insert>
-        <insert tableName="search_engine">
-            <column name="url" value="https://jackett.myaihome.es/api/v2.0/indexers/dontorrent/results/torznab/api"/>
-            <column name="name" value="DonTorrentJackett"/>
-            <column name="type" value="Jackett"/>
-            <column name="description" value="Don Torrent by Jackett"/>
-            <column name="active" value="0"/>
-        </insert>
-        <insert tableName="search_engine">
-            <column name="url" value="https://jackett.myaihome.es/api/v2.0/indexers/wolfmax4k/results/torznab/api"/>
-            <column name="name" value="Wolfmax4kJackett"/>
-            <column name="type" value="Jackett"/>
-            <column name="description" value="Wolfmax4k by Jackett"/>
-            <column name="active" value="0"/>
-        </insert>
-        <insert tableName="search_engine">
-            <column name="url" value="https://www26.mejortorrent.eu"/>
-            <column name="name" value="MejorTorrent"/>
-            <column name="type" value="MejorTorrent"/>
-            <column name="description" value="MejorTorrent"/>
-            <column name="active" value="1"/>
-        </insert>
-    </changeSet>
-
-</databaseChangeLog>
+<changeSet id="2-insert-search-engine-data" author="author">
+    <insert tableName="search_engine">
+        <column name="url" value="http://rojotorrent.com"/>
+        <column name="name" value="RojoTorrent"/>
+        <column name="type" value="DonTorrent"/>
+        <column name="description" value="Rojo Torrent"/>
+        <column name="active" value="1"/>
+    </insert>
+    <insert tableName="search_engine">
+        <column name="url" value="https://jackett.myaihome.es//api/v2.0/indexers/dontorrent/results/torznab/api"/>
+        <column name="name" value="DonTorrentJackett"/>
+        <column name="type" value="Jackett"/>
+        <column name="description" value="Don Torrent by Jackett"/>
+        <column name="active" value="0"/>
+    </insert>
+    <insert tableName="search_engine">
+        <column name="url" value="https://jackett.myaihome.es/api/v2.0/indexers/wolfmax4k/results/torznab/api"/>
+        <column name="name" value="Wolfmax4kJackett"/>
+        <column name="type" value="Jackett"/>
+        <column name="description" value="Wolfmax4k by Jackett"/>
+        <column name="active" value="0"/>
+    </insert>
+    <insert tableName="search_engine">
+        <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/abnormal/results/torznab/api"/>
+        <column name="name" value="AbnormalJackett"/>
+        <column name="type" value="Jackett"/>
+        <column name="description" value="Abnormal by Jackett"/>
+        <column name="active" value="0"/>
+    </insert>
+    <insert tableName="search_engine">
+        <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/digitalcore/results/torznab/api"/>
+        <column name="name" value="DigitalcoreJackett"/>
+        <column name="type" value="Jackett"/>
+        <column name="description" value="Digitalcore by Jackett"/>
+        <column name="active" value="0"/>
+    </insert>
+    <insert tableName="search_engine">
+        <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/rutracker/results/torznab/api"/>
+        <column name="name" value="RutrackerJackett"/>
+        <column name="type" value="Jackett"/>
+        <column name="description" value="Rutracker by Jackett"/>
+        <column name="active" value="0"/>
+    </insert>
+    <insert tableName="search_engine">
+        <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/speedcd/results/torznab/api"/>
+        <column name="name" value="SpeedcdJackett"/>
+        <column name="type" value="Jackett"/>
+        <column name="description" value="Speedcd by Jackett"/>
+        <column name="active" value="0"/>
+    </insert>
+</changeSet>
