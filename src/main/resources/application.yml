@@ -21,11 +21,11 @@ spring:
 addon:
   name: "Addon Torrent"
   jackett:
-    apiKey: "cdbz8t1yuz5oz5fsr9z74kj4gay86b2r"
+    apiKey: "nn6a4ekizom285jrsgs5koivj7wlyx9s"
   tmbd:
     apiUrl: "https://api.themoviedb.org/3"
-    apiKey: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkMjIyMWRiODNjM2MxYWIxMTM4M2Y5MDY2MTkzODAwOSIsIm5iZiI6MTcyODg4Nzc3OC41NzYxNzYsInN1YiI6IjY2NzU0OWVjMWE3YzZiYjQ3NTE2ZmM3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fSJq0Dio4tLcL2lhe7XYBMoGNltnKp_K_to3buLzg7s"
-    accountId: 21340220
+    apiKey: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2ZjU1MjhkYTFkMzgzZGUxYjg1YzgwNzU2ZDgyMzcyZSIsIm5iZiI6MTY0MjU5MDMxMC4xNzUsInN1YiI6IjYxZTdmMDY2M2ZhYmEwMDBlMTZmNDUzMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.qDgGMCOFM4CtiIctdgT7c8aHR89QdYoKC65wZ5fa7gQ"
+    accountId: 11785875
   download:
     path: ${STREMIO_DOWNLOAD_PATH:/tmp}
   videos:
