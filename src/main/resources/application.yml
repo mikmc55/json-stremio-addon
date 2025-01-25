@@ -3,18 +3,18 @@ server:
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/db}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql-hy123-hank-hy.e.aivencloud.com:11613/defaultdb}
+    username: ${SPRING_DATASOURCE_USERNAME:avnadmin}
+    password: ${SPRING_DATASOURCE_PASSWORD:AVNS_NNVAF8kXbsWL1mORFUU}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: none  # Cambiar a 'none' para evitar conflictos con Liquibase
     show-sql: true
     properties:
-      hibernate.dialect: org.hibernate.dialect.MySQLDialect
+      hibernate.dialect: org.hibernate.dialect.MySQL8Dialect  # Assuming you're using MySQL 8
 
-  liquibase:  # Corregido de 'liguibase' a 'liquibase'
+  liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
 
@@ -30,6 +30,7 @@ addon:
     path: ${STREMIO_DOWNLOAD_PATH:/tmp}
   videos:
     path: ${STREMIO_VIDEOS_PATH:/tmp}
+
 trakt:
   client-id: 837b293ac8605e224146e7c78485166ca12bbe8d63643e24e9e60c33de9c713a
   client-secret: 3441fa665cd1a87204d31c512d756cdf84b3589cedb985cc5af789c240a13c96
