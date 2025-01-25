@@ -19,5 +19,33 @@
     "name": "Wolfmax4kJackett",
     "type": "Jackett",
     "description": "Wolfmax4k by Jackett"
+  },
+  {
+    "id": 6,
+    "url": "http://37.187.96.240:9117/api/v2.0/indexers/abnormal/results/torznab/api",
+    "name": "AbnormalJackett",
+    "type": "Jackett",
+    "description": "Abnormal by Jackett"
+  },
+  {
+    "id": 7,
+    "url": "http://37.187.96.240:9117/api/v2.0/indexers/digitalcore/results/torznab/api",
+    "name": "DigitalcoreJackett",
+    "type": "Jackett",
+    "description": "Digitalcore by Jackett"
+  },
+  {
+    "id": 8,
+    "url": "http://37.187.96.240:9117/api/v2.0/indexers/rutracker/results/torznab/api",
+    "name": "RutrackerJackett",
+    "type": "Jackett",
+    "description": "Rutracker by Jackett"
+  },
+  {
+    "id": 9,
+    "url": "http://37.187.96.240:9117/api/v2.0/indexers/speedcd/results/torznab/api",
+    "name": "SpeedcdJackett",
+    "type": "Jackett",
+    "description": "Speedcd by Jackett"
   }
 ]
