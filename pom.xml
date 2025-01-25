@@ -146,7 +146,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>com.stremio.addon.YourMainClass</Main-Class> <!-- Change this to your main class -->
+                            <Main-Class>com.stremio.addon.YourMainClass</Main-Class> <!-- Replace with your main class -->
                         </manifestEntries>
                     </archive>
                 </configuration>
