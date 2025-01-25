@@ -94,7 +94,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
-            <version>2.15.2</version> <!-- Usa la versión más reciente compatible -->
+            <version>2.15.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -146,7 +146,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>com.stremio.addon.YourMainClass</Main-Class> <!-- Replace with your main class -->
+                            <Main-Class>com.stremio.addon.AddonApplication</Main-Class> <!-- Correct main class -->
                         </manifestEntries>
                     </archive>
                 </configuration>
