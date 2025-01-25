@@ -21,5 +21,12 @@ EXPOSE 8080
 # Set default environment variable
 ENV CONFIG_PATH=/config/torrent_searchers.json
 
+# Copy the JAR file to the runtime container (if needed)
+ARG JAR_FILE=target/stremio-addon-0.0.2.jar
+COPY ${JAR_FILE} app.jar
+
+# Volume for config file
+VOLUME /config
+
 # Run the application
 ENTRYPOINT ["java", "-jar", "/app.jar"]
