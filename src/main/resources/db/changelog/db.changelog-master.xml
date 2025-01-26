@@ -5,8 +5,13 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <!-- Create DATABASECHANGELOG table with a composite primary key -->
+    <!-- Create DATABASECHANGELOG table with a composite primary key, only if it doesn't exist -->
     <changeSet id="1-create-databasechangelog" author="author">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="DATABASECHANGELOG"/>
+            </not>
+        </preConditions>
         <createTable tableName="DATABASECHANGELOG">
             <column name="ID" type="VARCHAR(255)">
                 <constraints primaryKey="true" nullable="false"/>
