@@ -5,6 +5,38 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
+    <!-- Create DATABASECHANGELOG table with a composite primary key -->
+    <changeSet id="1-create-databasechangelog" author="author">
+        <createTable tableName="DATABASECHANGELOG">
+            <column name="ID" type="VARCHAR(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="AUTHOR" type="VARCHAR(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="FILENAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATEEXECUTED" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ORDEREXECUTED" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EXECTYPE" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MD5SUM" type="VARCHAR(35)"/>
+            <column name="DESCRIPTION" type="VARCHAR(255)"/>
+            <column name="COMMENTS" type="VARCHAR(255)"/>
+            <column name="TAG" type="VARCHAR(255)"/>
+            <column name="LIQUIBASE" type="VARCHAR(20)"/>
+            <column name="CONTEXTS" type="VARCHAR(255)"/>
+            <column name="LABELS" type="VARCHAR(255)"/>
+            <column name="DEPLOYMENT_ID" type="VARCHAR(10)"/>
+        </createTable>
+    </changeSet>
+
     <changeSet id="2-insert-search-engine-data" author="author">
         <!-- Insert row for RojoTorrent -->
         <insert tableName="search_engine">
