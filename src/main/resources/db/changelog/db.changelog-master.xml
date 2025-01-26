@@ -1,51 +1,73 @@
-<changeSet id="2-insert-search-engine-data" author="author">
-    <insert tableName="search_engine">
-        <column name="url" value="http://rojotorrent.com"/>
-        <column name="name" value="RojoTorrent"/>
-        <column name="type" value="DonTorrent"/>
-        <column name="description" value="Rojo Torrent"/>
-        <column name="active" value="1"/>
-    </insert>
-    <insert tableName="search_engine">
-        <column name="url" value="https://jackett.myaihome.es//api/v2.0/indexers/dontorrent/results/torznab/api"/>
-        <column name="name" value="DonTorrentJackett"/>
-        <column name="type" value="Jackett"/>
-        <column name="description" value="Don Torrent by Jackett"/>
-        <column name="active" value="0"/>
-    </insert>
-    <insert tableName="search_engine">
-        <column name="url" value="https://jackett.myaihome.es/api/v2.0/indexers/wolfmax4k/results/torznab/api"/>
-        <column name="name" value="Wolfmax4kJackett"/>
-        <column name="type" value="Jackett"/>
-        <column name="description" value="Wolfmax4k by Jackett"/>
-        <column name="active" value="0"/>
-    </insert>
-    <insert tableName="search_engine">
-        <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/abnormal/results/torznab/api"/>
-        <column name="name" value="AbnormalJackett"/>
-        <column name="type" value="Jackett"/>
-        <column name="description" value="Abnormal by Jackett"/>
-        <column name="active" value="0"/>
-    </insert>
-    <insert tableName="search_engine">
-        <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/digitalcore/results/torznab/api"/>
-        <column name="name" value="DigitalcoreJackett"/>
-        <column name="type" value="Jackett"/>
-        <column name="description" value="Digitalcore by Jackett"/>
-        <column name="active" value="0"/>
-    </insert>
-    <insert tableName="search_engine">
-        <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/rutracker/results/torznab/api"/>
-        <column name="name" value="RutrackerJackett"/>
-        <column name="type" value="Jackett"/>
-        <column name="description" value="Rutracker by Jackett"/>
-        <column name="active" value="0"/>
-    </insert>
-    <insert tableName="search_engine">
-        <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/speedcd/results/torznab/api"/>
-        <column name="name" value="SpeedcdJackett"/>
-        <column name="type" value="Jackett"/>
-        <column name="description" value="Speedcd by Jackett"/>
-        <column name="active" value="0"/>
-    </insert>
-</changeSet>
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="2-insert-search-engine-data" author="author">
+        <!-- Insert row for RojoTorrent -->
+        <insert tableName="search_engine">
+            <column name="url" value="http://rojotorrent.com"/>
+            <column name="name" value="RojoTorrent"/>
+            <column name="type" value="DonTorrent"/>
+            <column name="description" value="Rojo Torrent"/>
+            <column name="active" value="1"/>
+        </insert>
+
+        <!-- Insert row for DonTorrentJackett -->
+        <insert tableName="search_engine">
+            <column name="url" value="https://jackett.myaihome.es//api/v2.0/indexers/dontorrent/results/torznab/api"/>
+            <column name="name" value="DonTorrentJackett"/>
+            <column name="type" value="Jackett"/>
+            <column name="description" value="Don Torrent by Jackett"/>
+            <column name="active" value="0"/>
+        </insert>
+
+        <!-- Insert row for Wolfmax4kJackett -->
+        <insert tableName="search_engine">
+            <column name="url" value="https://jackett.myaihome.es/api/v2.0/indexers/wolfmax4k/results/torznab/api"/>
+            <column name="name" value="Wolfmax4kJackett"/>
+            <column name="type" value="Jackett"/>
+            <column name="description" value="Wolfmax4k by Jackett"/>
+            <column name="active" value="0"/>
+        </insert>
+
+        <!-- Insert row for AbnormalJackett -->
+        <insert tableName="search_engine">
+            <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/abnormal/results/torznab/api"/>
+            <column name="name" value="AbnormalJackett"/>
+            <column name="type" value="Jackett"/>
+            <column name="description" value="Abnormal by Jackett"/>
+            <column name="active" value="0"/>
+        </insert>
+
+        <!-- Insert row for DigitalcoreJackett -->
+        <insert tableName="search_engine">
+            <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/digitalcore/results/torznab/api"/>
+            <column name="name" value="DigitalcoreJackett"/>
+            <column name="type" value="Jackett"/>
+            <column name="description" value="Digitalcore by Jackett"/>
+            <column name="active" value="0"/>
+        </insert>
+
+        <!-- Insert row for RutrackerJackett -->
+        <insert tableName="search_engine">
+            <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/rutracker/results/torznab/api"/>
+            <column name="name" value="RutrackerJackett"/>
+            <column name="type" value="Jackett"/>
+            <column name="description" value="Rutracker by Jackett"/>
+            <column name="active" value="0"/>
+        </insert>
+
+        <!-- Insert row for SpeedcdJackett -->
+        <insert tableName="search_engine">
+            <column name="url" value="http://37.187.96.240:9117/api/v2.0/indexers/speedcd/results/torznab/api"/>
+            <column name="name" value="SpeedcdJackett"/>
+            <column name="type" value="Jackett"/>
+            <column name="description" value="Speedcd by Jackett"/>
+            <column name="active" value="0"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
